@@ -112,40 +112,32 @@ export default function HomePage() {
   ];
 
   // 3. إعدادات السلايدر لشركاء النجاح
-  const sliderSettings = {
-    dots: false,
-    infinite: true,
-    speed: 5000, 
-    slidesToShow: 5, 
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 0,
-    cssEase: "linear",
-    pauseOnHover: true,
-    rtl: true, 
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 3, 
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2, 
-          centerMode: true, 
-          centerPadding: '20px',
-        }
+ const sliderSettings = {
+  dots: false,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 5, // للشاشات الكبيرة
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 3000,
+  rtl: true,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 3,
       }
-    ]
-  };
+    },
+    {
+      breakpoint: 768, // الجوال
+      settings: {
+        slidesToShow: 2, // عرض لوجوين فقط ليكون حجمهم كبيراً وواضحاً
+        centerMode: true, // لإظهار جزء من اللوجو التالي (يعطي إيحاء بالسحب)
+        centerPadding: '20px',
+      }
+    }
+  ]
+};
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -410,50 +402,52 @@ export default function HomePage() {
           5. سكشن شركاء النجاح (Success Partners Slider)
           =================================================================================== 
       */}
-      <section ref={clientsRef} className="py-20 md:py-32 bg-slate-50 overflow-hidden border-t border-slate-100">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12 md:mb-20">
-            <h2 className="text-3xl md:text-5xl font-black text-slate-800 mb-4 tracking-tight">
-              شركاء النجاح في خدمات حفر الآبار
-            </h2>
-            <div className="w-20 h-1.5 bg-gradient-to-r from-sky-600 to-green-500 mx-auto rounded-full" />
-            <p className="text-lg md:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-              نفخر بالثقة التي منحنا إياها كبار العملاء في مختلف قطاعات <strong>توريد وحفر الآبار</strong> في مصر.
-            </p>
-          </div>
+      <section ref={clientsRef} className="py-16 md:py-32 bg-[#fcfcfd] overflow-hidden border-t border-slate-100">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-10 md:mb-20">
+      <h2 className="text-2xl md:text-5xl font-black text-slate-800 mb-4 leading-tight">
+        شركاء النجاح في خدمات حفر الآبار
+      </h2>
+      <div className="w-16 h-1.5 bg-gradient-to-r from-sky-600 to-green-500 mx-auto rounded-full" />
+      <p className="text-base md:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed px-4">
+        نفخر بالثقة التي منحنا إياها كبار العملاء في مختلف قطاعات <strong>توريد وحفر الآبار</strong> في مصر.
+      </p>
+    </div>
 
-          <div className="px-2 md:px-10 relative">
-            {clientsLoading ? (
-              <div className="flex flex-col items-center py-16 gap-4">
-                <div className="w-10 h-10 border-4 border-slate-200 border-t-sky-600 rounded-full animate-spin" />
-                <p className="animate-pulse text-slate-400 font-bold text-sm">جاري جلب بيانات الشركاء...</p>
-              </div>
-            ) : isClientsVisible && clients.length > 0 ? (
-              <div className="success-partners-wrapper mobile-slider-adjust">
-                <Slider {...sliderSettings}>
-                  {clients.map((client) => (
-                    <div key={client.id} className="px-2 md:px-6 outline-none group cursor-pointer">
-                      <div className="relative h-24 md:h-32 w-full rounded-xl md:rounded-2xl p-4 md:p-6 border border-slate-100 group-hover:border-sky-200 transition-all duration-300 overflow-hidden shadow-sm hover:shadow-xl bg-white">
-                        <Image
-                          src={client.logo_url}
-                          alt={`لوجو شريك نجاح شركة أبار جروب لحفر الآبار - ${client.id}`}
-                          fill
-                          className="object-contain p-2 md:p-4 grayscale opacity-70 md:opacity-60 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110"
-                          sizes="(max-width: 768px) 40vw, 20vw"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </Slider>
-              </div>
-            ) : (
-              <div className="text-center py-10 text-red-400 text-sm font-bold border-2 border-dashed border-red-50 rounded-2xl">
-                تعذر تحميل بيانات الشركاء حالياً.
-              </div>
-            )}
-          </div>
+    <div className="px-2 relative">
+      {clientsLoading ? (
+        <div className="flex flex-col items-center py-16 gap-4">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-sky-600 rounded-full animate-spin" />
+          <p className="text-slate-400 font-bold text-sm">جاري جلب بيانات الشركاء...</p>
         </div>
-      </section>
+      ) : isClientsVisible && clients.length > 0 ? (
+        <div className="success-partners-wrapper">
+          <Slider {...sliderSettings}>
+            {clients.map((client) => (
+              <div key={client.id} className="px-2 md:px-4 outline-none group cursor-pointer">
+                {/* تعديل الارتفاع والعرض ليكون متناسقاً على الجوال */}
+                <div className="relative h-20 md:h-32 w-full rounded-2xl p-4 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md bg-white flex items-center justify-center">
+                  <Image
+                    src={client.logo_url}
+                    alt={`لوجو شريك نجاح شركة أبار جروب - ${client.id}`}
+                    fill
+                    // تحسين: إلغاء الـ grayscale على الجوال ليكون اللوجو واضحاً فوراً
+                    className="object-contain p-3 md:p-5 grayscale-0 md:grayscale md:opacity-60 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+                    sizes="(max-width: 768px) 40vw, 20vw"
+                  />
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div>
+      ) : (
+        <div className="text-center py-10 text-red-400 text-sm font-bold border-2 border-dashed border-red-50 rounded-2xl">
+          تعذر تحميل بيانات الشركاء حالياً.
+        </div>
+      )}
+    </div>
+  </div>
+</section>
 
       {/* ===================================================================================
           سكشن (جديد) - لزيادة كمية الكلمات وتحسين الـ SEO في نهاية الصفحة
