@@ -12,15 +12,15 @@ import { Input } from '@/components/ui/input';
 import { usePathname } from 'next/navigation';
 
 // --- الثوابت وروابط التواصل الخاصة بالشركة ---
-const COMPANY_CONTACTS = {
+const CONTACT_LINKS = {
   whatsapp: "https://wa.me/201211110240",
-  linkedin: "https://www.linkedin.com/company/abaargroupegy/",
-  instagram: "https://www.instagram.com/abaargroup?igsh=aGNnaWplaGRrMDl5",
-  facebook: "https://www.facebook.com/share/1GkJntrBik/?mibextid=qi2Omg",
-  youtube: "https://www.youtube.com/channel/UCkRxwwv_7Q3zr17LQoYzBKg?sub_confirmation=1",
-  pinterest: "https://www.pinterest.com/abaargroupegy/",
-  twitter: "https://x.com/abaar_group",
-  tiktok: "https://www.tiktok.com/@abaar_group?_r=1&_d=ef5fhigc76e6ec&sec_uid=MS4wLjABAAAAW6tt9vRDMELerVX8VWhfLimkz1f7SsHMYF17tHY_3n-TRbUqyLAxgKWP38qi5IQS&share_author_id=7461541408743195654&sharer_language=ar&source=h5_m&u_code=ef5fi88m6c0gde&timestamp=1766671355&user_id=7390646957821789190&sec_user_id=MS4wLjABAAAAlRh26u6Wvz3-ugoiwWW5ws_zBzQUD_tcklDAp_6hd7g8dcN4ZBncXjegqa024VFd&utm_source=whatsapp&utm_campaign=client_share&utm_medium=android&share_iid=7390646870919939845&share_link_id=a599dc59-735f-4b74-9f4b-a1401403509c&share_app_id=1233&ugbiz_name=Account&ug_btm=b6880%2Cb2878&social_share_type=5"
+  linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/abaargroupegy/",
+  instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/abaargroup?igsh=aGNnaWplaGRrMDl5",
+  facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/share/1GkJntrBik/?mibextid=qi2Omg",
+  youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/channel/UCkRxwwv_7Q3zr17LQoYzBKg?sub_confirmation=1",
+  pinterest: process.env.NEXT_PUBLIC_PINTEREST_URL || "https://www.pinterest.com/abaargroupegy/",
+  twitter: process.env.NEXT_PUBLIC_X_URL || "https://x.com/abaar_group",
+  tiktok: process.env.NEXT_PUBLIC_tiktok || "https://www.tiktok.com/@abaar_group?_r=1&_d=ef5fhigc76e6ec&sec_uid=MS4wLjABAAAAW6tt9vRDMELerVX8VWhfLimkz1f7SsHMYF17tHY_3n-TRbUqyLAxgKWP38qi5IQS&share_author_id=7461541408743195654&sharer_language=ar&source=h5_m&u_code=ef5fi88m6c0gde&timestamp=1766671355&user_id=7390646957821789190&sec_user_id=MS4wLjABAAAAlRh26u6Wvz3-ugoiwWW5ws_zBzQUD_tcklDAp_6hd7g8dcN4ZBncXjegqa024VFd&utm_source=whatsapp&utm_campaign=client_share&utm_medium=android&share_iid=7390646870919939845&share_link_id=a599dc59-735f-4b74-9f4b-a1401403509c&share_app_id=1233&ugbiz_name=Account&ug_btm=b6880%2Cb2878&social_share_type=5"
 };
 
 const navLinks = [
@@ -34,11 +34,59 @@ const navLinks = [
 ];
 
 const socialData = [
-  { id: "facebook", imgSrc: "/icons/facebook.png", label: "Facebook", href: COMPANY_CONTACTS.facebook, hoverColor: "hover:bg-blue-600" },
-  { id: "instagram", imgSrc: "/icons/instagram.png", label: "Instagram", href: COMPANY_CONTACTS.instagram, hoverColor: "hover:bg-pink-600" },
-  { id: "youtube", imgSrc: "/icons/youtube.png", label: "Youtube", href: COMPANY_CONTACTS.youtube, hoverColor: "hover:bg-red-600" },
-  { id: "tiktok", imgSrc: "/icons/tik-tok.png", label: "Tiktok", href: COMPANY_CONTACTS.tiktok, hoverColor: "hover:bg-black" },
-  { id: "linkedin", imgSrc: "/icons/lin-removebg-preview.png", label: "linkedin", href: COMPANY_CONTACTS.linkedin, hoverColor: "hover:bg-blue-700" },
+  {
+    id: "facebook",
+    imgSrc: "/icons/facebook.png",
+    label: "Facebook",
+    href: CONTACT_LINKS.facebook,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(24,119,242,0.8)]",
+  },
+  {
+    id: "instagram",
+    imgSrc: "/icons/instagram.png",
+    label: "Instagram",
+    href: CONTACT_LINKS.instagram,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(228,64,95,0.8)]",
+  },
+  {
+    id: "youtube",
+    imgSrc: "/icons/youtube.png",
+    label: "Youtube",
+    href: CONTACT_LINKS.youtube,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(255,0,0,0.8)]",
+  },
+  {
+    id: "tiktok",
+    imgSrc: "/icons/tik-tok.png",
+    label: "Tiktok",
+    href: CONTACT_LINKS.tiktok,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.7)]",
+  },
+  {
+    id: "linkedin",
+    imgSrc: "/icons/lin-removebg-preview.png",
+    label: "linkedin",
+    href: CONTACT_LINKS.linkedin,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(0,119,181,0.8)]",
+  },
+  {
+    id: "X",
+    imgSrc: "/icons/X-removebg-preview (1).png", 
+    label: "X",
+    href: CONTACT_LINKS.twitter,
+    // اجعل الخلفية سوداء تماماً مع إطار خفيف لتظهر بوضوح
+    bgClass: "bg-black border border-white/10", 
+    // تحويل الأيقونة السوداء المفرغة إلى بيضاء ناصعة
+    iconClass: "invert brightness-200 scale-75", 
+    hoverClass: "hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)]",
+},
+  {
+    id: "pinterest",
+    imgSrc: "/icons/pinterest-removebg-preview.png",
+    label: "pinterest",
+    href: CONTACT_LINKS.pinterest,
+    hoverClass: "hover:drop-shadow-[0_0_15px_rgba(189,8,28,0.8)]",
+  },
 ];
 
 const Footer = () => {
@@ -69,26 +117,35 @@ const Footer = () => {
             <p className="text-slate-400 text-sm leading-relaxed font-arabic">
               أبار جروب شركة مصرية رائدة في حفر وصيانة وتأهيل آبار المياه الجوفية، وتقديم حلول متكاملة للطاقة الشمسية، مع الالتزام بأعلى معايير الجودة.
             </p>
-            <div className="flex flex-wrap gap-3">
-              {socialData.map((social) => (
-                <a
-                  key={social.id}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-9 h-9 rounded-full bg-white/5 flex items-center justify-center transition-all duration-300 ${social.hoverColor} group`}
-                >
-                  <span className="sr-only">{social.label}</span>
-                  <Image 
-                    src={social.imgSrc} 
-                    alt={social.label} 
-                    width={20} 
-                    height={20} 
-                    className="opacity-70 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              ))}
-            </div>
+           <div className="flex flex-wrap gap-4"> {/* زيادة الفجوة قليلاً */}
+ {socialData.map((social) => (
+  <a
+    key={social.id}
+    href={social.href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`
+      w-10 h-10 rounded-full flex items-center justify-center 
+      transition-all duration-300 hover:shadow-lg hover:-translate-y-1
+      ${social.bgClass || ""} /* استخدام لون خلفية مخصص أو الافتراضي */
+      ${social.hoverClass} group
+    `}
+  >
+    <span className="sr-only">{social.label}</span>
+    <Image 
+      src={social.imgSrc} 
+      alt={social.label} 
+      width={22} 
+      height={22} 
+      className={`
+        transition-all duration-300
+        ${social.iconClass || "opacity-90 group-hover:opacity-100 brightness-110"}
+        group-hover:scale-110
+      `}
+    />
+  </a>
+))}
+</div>
           </div>
 
           {/* العمود الثاني: روابط سريعة */}

@@ -5,7 +5,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { 
     Shield, Clock, Star, Award, Zap, 
-    Droplets, CheckCircle2, ArrowLeft 
+    Droplets, CheckCircle2, ArrowLeft,
+    Wrench, Truck, Sun, Camera
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import StartAction from '@/components/StartAction';
@@ -14,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * تعريف الواجهات (Interfaces) لضمان توافق TypeScript
+ * تم الإبقاء على كافة التعريفات الأصلية
  */
 interface Service {
   id: string;
@@ -40,7 +42,7 @@ const servicesFetcher = async () => {
 };
 
 const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
-  // استخدام SWR مع البيانات الأولية القادمة من السيرفر لمنع "الوميض" عند التحميل
+  // استخدام SWR مع البيانات الأولية لمنع الوميض وتحسين تجربة المستخدم
   const { data: services, error: swrError, isLoading } = useSWR('/service', servicesFetcher, {
     fallbackData: initialServices,
     revalidateOnFocus: false
@@ -50,7 +52,7 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
 
   /**
    * منطق WebGL المتطور لخلفية الهيرو (التوهج المتحرك)
-   * تم الحفاظ على كافة التفاصيل لضمان الأداء البصري
+   * تم الحفاظ على الكود كاملاً لضمان التأثيرات البصرية
    */
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -126,6 +128,24 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
   return (
     <main className="min-h-screen bg-white font-arabic" dir="rtl">
       
+      {/* إضافة بيانات Schema المنظمة لتحسين فهم جوجل للخدمات */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "serviceType": "حفر وصيانة آبار المياه",
+            "provider": {
+              "@type": "Organization",
+              "name": "أبار جروب"
+            },
+            "areaServed": "Egypt",
+            "description": "نحن خبراء في حفر وصيانة آبار المياه وتوريد الطلمبات وأنظمة الطاقة الشمسية في مصر."
+          })
+        }}
+      />
+
       {/* === 1. قسم الهيرو (Hero Section) === */}
       <section className="relative h-[55vh] md:h-[70vh] flex items-center justify-center overflow-hidden bg-sky-950">
         <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-40">
@@ -143,13 +163,14 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs font-black rounded-full mb-6 tracking-widest animate-pulse shadow-lg shadow-emerald-500/20">
-              حلول رائدة منذ 1999
+               متخصصون في حفر وصيانة الآبار منذ 1999
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white drop-shadow-2xl mb-6">
-              خدمات <span className="text-emerald-400">أبار جروب</span>
+            {/* تحديث H1 ليكون غني بالكلمات المفتاحية المطلوبة */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white drop-shadow-2xl mb-6">
+              خدمات <span className="text-emerald-400">حفر وصيانة الآبار</span> وتوريد الطلمبات
             </h1>
             <p className="text-sky-100 text-lg md:text-2xl max-w-3xl mx-auto font-medium opacity-90 leading-relaxed">
-              نلتزم بتقديم أعلى مستويات الدقة الفنية في حفر الآبار وأنظمة الطاقة الشمسية المتكاملة.
+              نلتزم بـ <strong>توريد كافة مستلزمات الآبار</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> لضمان تدفق مياه مستدام وبأقل تكلفة.
             </p>
           </motion.div>
         </div>
@@ -165,10 +186,13 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
             >
-                <h2 className="text-4xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight">ماذا نقدم لعملائنا؟</h2>
+                {/* تحديث H2 لزيادة اتساق الكلمات المفتاحية */}
+                <h2 className="text-4xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+                  دليل خدمات حفر وتوريد وصيانة الآبار
+                </h2>
                 <div className="w-32 h-2 bg-sky-600 mx-auto rounded-full mb-8"></div>
                 <p className="mt-6 text-slate-600 text-lg md:text-xl max-w-3xl mx-auto leading-loose font-medium">
-                  نفتخر بكوننا الشريك الموثوق لكبرى المشاريع الزراعية والصناعية في مصر، من خلال حزمة خدماتنا المتكاملة.
+                  نحن نوفر لك حلولاً واقعية في <strong>صيانة وتطهير الآبار</strong> ومعالجة كافة المشاكل الفنية لضمان استمرارية إنتاجية بئرك المائية.
                 </p>
             </motion.div>
           </div>
@@ -201,13 +225,52 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
               ))}
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* === 3. لماذا تختار آبار جروب (Benefits Section) === */}
-      <section className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-50"></div>
+      {/* === 3. قسم جديد: تفاصيل توريد مستلزمات الآبار وصيانتها (لحل مشكلة Thin Content) === */}
+      <section className="py-24 bg-white border-y border-slate-100">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900">خبراء صيانة وتجهيز الآبار في مصر</h2>
+              <div className="space-y-6 text-slate-600 text-lg leading-relaxed">
+                <p>
+                  تعد عملية <strong>صيانة الآبار</strong> الدورية هي الضمان الوحيد لعدم تعطل مشروعك الزراعي أو الصناعي. في أبار جروب، نقوم بفحص البير بدقة وتطهيره من الرواسب لضمان نقاء المياه وقوة التدفق.
+                </p>
+                <p>
+                  نحن نتميز بـ <strong>توريد مستلزمات الآبار</strong> الأصلية، بدءاً من المواسير المعالجة ضد الصدأ وصولاً إلى كابلات الأعماق القوية، لنضمن لك تجهيزاً يعيش لسنوات طويلة دون مشاكل.
+                </p>
+                <p>
+                  استخدام <strong>الطاقة الشمسية</strong> هو الحل الأمثل لتشغيل طلمبات المياه بأقل تكلفة تشغيلية. نحن نصمم لك محطة شمسية تتناسب مع عمق بئرك ونوع الطلمبة المستخدمة.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+                <div className="bg-sky-50 p-8 rounded-3xl flex flex-col items-center text-center group hover:bg-sky-600 transition-colors">
+                  <Wrench className="w-12 h-12 text-sky-600 group-hover:text-white mb-4" />
+                  <h4 className="font-bold text-slate-900 group-hover:text-white">صيانة فورية</h4>
+                </div>
+                <div className="bg-emerald-50 p-8 rounded-3xl flex flex-col items-center text-center group hover:bg-emerald-600 transition-colors">
+                  <Truck className="w-12 h-12 text-emerald-600 group-hover:text-white mb-4" />
+                  <h4 className="font-bold text-slate-900 group-hover:text-white">توريد مستلزمات</h4>
+                </div>
+                <div className="bg-amber-50 p-8 rounded-3xl flex flex-col items-center text-center group hover:bg-amber-600 transition-colors">
+                  <Sun className="w-12 h-12 text-amber-600 group-hover:text-white mb-4" />
+                  <h4 className="font-bold text-slate-900 group-hover:text-white">طاقة شمسية</h4>
+                </div>
+                <div className="bg-purple-50 p-8 rounded-3xl flex flex-col items-center text-center group hover:bg-purple-600 transition-colors">
+                  <Camera className="w-12 h-12 text-purple-600 group-hover:text-white mb-4" />
+                  <h4 className="font-bold text-slate-900 group-hover:text-white">تصوير الآبار</h4>
+                </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* === 4. لماذا تختار آبار جروب (Benefits Section) === */}
+      <section className="py-32 bg-slate-50 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-100 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 opacity-50"></div>
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
@@ -219,15 +282,15 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {[
-              { icon: Clock, title: "خبرة متراكمة", desc: "أكثر من ربع قرن من النجاح في كافة أراضي جمهورية مصر العربية.", color: "bg-blue-600" },
-              { icon: Award, title: "معايير عالمية", desc: "نعتمد على أفضل العلامات التجارية العالمية في الطلمبات والمعدات.", color: "bg-emerald-600" },
-              { icon: Shield, title: "ضمان حقيقي", desc: "فريق صيانة ودعم فني متاح لضمان استمرارية عمل مشاريعكم بكفاءة.", color: "bg-amber-500" },
-              { icon: Star, title: "ابتكار تقني", desc: "نستخدم أحدث تقنيات التصوير التليفزيوني والجيوفيزيائي للآبار.", color: "bg-sky-500" },
+              { icon: Clock, title: "صيانة دورية", desc: "نلتزم بجدول صيانة يضمن بقاء بئرك في أفضل حالاتها التشغيلية لسنوات.", color: "bg-blue-600" },
+              { icon: Award, title: "توريد طلمبات", desc: "نوفر لك طلمبات ومواتير أعماق من أفضل الشركات العالمية بضمان معتمد.", color: "bg-emerald-600" },
+              { icon: Shield, title: "مستلزمات أصلية", desc: "توريد كافة مستلزمات البير من مواسير وكابلات مطابقة للمواصفات الفنية.", color: "bg-amber-500" },
+              { icon: Star, title: "فحص تليفزيوني", desc: "نستخدم كاميرات تصوير أعماق حديثة لتحديد مشاكل الآبار ومعالجتها واقعياً.", color: "bg-sky-500" },
             ].map((benefit, i) => (
               <motion.div 
                 key={i} 
                 whileHover={{ y: -10 }}
-                className="group p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-2xl transition-all duration-500 text-center"
+                className="group p-10 rounded-[3rem] bg-white border border-slate-100 hover:shadow-2xl transition-all duration-500 text-center"
               >
                 <div className={`inline-flex items-center justify-center w-24 h-24 ${benefit.color} rounded-[2rem] mb-10 group-hover:rotate-[15deg] transition-transform shadow-2xl`}>
                   <benefit.icon className="h-12 w-12 text-white" />

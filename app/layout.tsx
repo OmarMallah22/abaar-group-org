@@ -14,24 +14,30 @@ const notoNaskh = Noto_Naskh_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: 'أبار جروب | خدمات حفر وصيانة الآبار',
-  description: 'شركة رائدة في مجال حفر وصيانة آبار المياه وتوريد الطلمبات في مصر.',
-  // إعدادات الأيقونات لضمان الظهور في المتصفح ونتائج البحث
+  // تم زيادة الطول ليشمل الكلمات المفتاحية: حفر، صيانة، طلمبات، طاقة شمسية
+  title: 'أبار جروب | حفر وصيانة آبار مياه، توريد طلمبات، وطاقة شمسية في مصر',
+  // الوصف المثالي (بين 120-160 حرفاً) لزيادة كثافة المحتوى
+  description: 'شركة أبار جروب الرائدة في حفر وصيانة آبار المياه، توريد وتركيب طلمبات الأعماق الغاطسة، وتصميم أنظمة الطاقة الشمسية المبتكرة في مصر بأعلى جودة وأفضل الأسعار.',
+  // إضافة الكلمات المفتاحية (تساعد بعض المحركات)
+  keywords: 'حفر آبار مياه، صيانة آبار، توريد طلمبات مياه، طاقة شمسية مصر، أبار جروب، حفر وتوريد',
+
   icons: {
     icon: [
-      { url: 'image/f.png', sizes: '32x32' },
-      { url: 'image/icon.png', sizes: '192x192' },
+      { url: '/image/f.png', sizes: '32x32' },
+      { url: '/image/icon.png', sizes: '192x192' },
     ],
-    shortcut: 'image/favicon.ico',
-    apple: 'image/apple-icon.png',
+    shortcut: '/image/favicon.ico',
+    apple: '/image/apple-icon.png',
   },
-  // الربط مع أدوات مشرفي المواقع لجوجل
-  other: {
-    "google-site-verification": "كود_التحقق_الخاص_بك", 
+
+  // إضافة الرابط الأصلي (Canonical URL) لتقوية الأرشفة
+  alternates: {
+    canonical: 'https://abaargroup.org',
   },
+
   openGraph: {
-    title: 'أبار جروب | خدمات حفر وصيانة الآبار',
-    description: 'حلول متكاملة لحفر الآبار والطاقة الشمسية في مصر.',
+    title: 'أبار جروب | خدمات حفر الآبار وأنظمة الطاقة الشمسية في مصر',
+    description: 'نحن متخصصون في حفر وصيانة آبار المياه وتوريد طلمبات الأعماق وتركيب محطات الطاقة الشمسية.',
     url: 'https://abaargroup.org',
     siteName: 'أبار جروب',
     images: [
@@ -39,19 +45,30 @@ export const metadata: Metadata = {
         url: '/og-image.jpg', 
         width: 1200,
         height: 630,
+        alt: 'أبار جروب لحفر الآبار والطاقة الشمسية',
       },
     ],
     locale: 'ar_EG',
     type: 'website',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'أبار جروب',
-    description: 'خدمات حفر وصيانة الآبار في مصر.',
-    images: ['/og-image.jpg'],
-  },
 };
-
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "أبار جروب",
+      "url": "https://abaargroup.org",
+      "logo": "https://abaargroup.org/image/icon.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+201XXXXXXXXX",
+        "contactType": "customer service"
+      }
+    })
+  }}
+/>
 export default function RootLayout({
   children,
 }: {

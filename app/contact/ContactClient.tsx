@@ -3,7 +3,7 @@
 import React, { useState, FormEvent, ChangeEvent, useEffect, useMemo } from 'react';
 import { 
   MapPin, Phone, Mail, Clock, MessageSquare, ChevronDown, 
-  ArrowLeft, Zap, CheckCircle
+  ArrowLeft, Zap, CheckCircle, Headphones, LifeBuoy, FileText
 } from 'lucide-react'; 
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,25 +11,24 @@ import Image from 'next/image';
 
 /**
  * الواجهة البرمجية للخصائص (Props Interface)
- * لاستقبال البيانات من السيرفر (Server Component)
  */
 interface ContactClientProps {
   initialConfig?: any;
 }
 
-// --- الثوابت وروابط التواصل الأساسية ---
+// --- روابط التواصل الأساسية (متسقة مع النطاق الرسمي) ---
 const CONTACT_LINKS = {
   whatsapp: "https://wa.me/201211110240",
-  linkedin: process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/abaargroupegy/",
-  instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/abaargroup?igsh=aGNnaWplaGRrMDl5",
-  facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/share/1GkJntrBik/?mibextid=qi2Omg",
-  youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/channel/UCkRxwwv_7Q3zr17LQoYzBKg?sub_confirmation=1",
-  pinterest: process.env.NEXT_PUBLIC_PINTEREST_URL || "https://www.pinterest.com/abaargroupegy/",
-  twitter: process.env.NEXT_PUBLIC_X_URL || "https://x.com/abaar_group",
-  tiktok: process.env.NEXT_PUBLIC_tiktok || "https://www.tiktok.com/@abaar_group?_r=1&_d=ef5fhigc76e6ec&sec_uid=MS4wLjABAAAAW6tt9vRDMELerVX8VWhfLimkz1f7SsHMYF17tHY_3n-TRbUqyLAxgKWP38qi5IQS&share_author_id=7461541408743195654&sharer_language=ar&source=h5_m&u_code=ef5fi88m6c0gde&timestamp=1766671355&user_id=7390646957821789190&sec_user_id=MS4wLjABAAAAlRh26u6Wvz3-ugoiwWW5ws_zBzQUD_tcklDAp_6hd7g8dcN4ZBncXjegqa024VFd&utm_source=whatsapp&utm_campaign=client_share&utm_medium=android&share_iid=7390646870919939845&share_link_id=a599dc59-735f-4b74-9f4b-a1401403509c&share_app_id=1233&ugbiz_name=Account&ug_btm=b6880%2Cb2878&social_share_type=5"
+  linkedin: "https://www.linkedin.com/company/abaargroupegy/",
+  instagram: "https://www.instagram.com/abaargroup",
+  facebook: "https://www.facebook.com/abaargroupegy",
+  youtube: "https://www.youtube.com/@abaargroup",
+  pinterest: "https://www.pinterest.com/abaargroupegy/",
+  twitter: "https://x.com/abaar_group",
+  tiktok: "https://www.tiktok.com/@abaar_group"
 };
 
-// --- بيانات الأيقونات الاجتماعية المحدثة ---
+// --- بيانات الأيقونات الاجتماعية (تم تحديث أيقونة X والوضوح) ---
 const socialData = [
   {
     id: "facebook",
@@ -71,6 +70,8 @@ const socialData = [
     imgSrc: "/icons/X-removebg-preview (1).png",
     label: "X",
     href: CONTACT_LINKS.twitter,
+    bgClass: "bg-black border border-white/10",
+    iconClass: "invert brightness-200 scale-75",
     hoverClass: "hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)]",
   },
   {
@@ -90,14 +91,21 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
   const [formStatus, setFormStatus] = useState(FORM_STATUS.IDLE);
   const [services, setServices] = useState<{id: string, title: string}[]>([]);
 
-  // البيانات المهيكلة المحلية كنسخة احتياطية
+  // تطوير البيانات المهيكلة لتشمل ساعات العمل ونوع النشاط بدقة
   const jsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "أبار جروب لحفر الآبار والطاقة الشمسية",
+    "image": "https://abaargroup.org/image/about.jpeg",
     "telephone": initialConfig?.contact_phone || "01211110240",
     "email": initialConfig?.contact_email || "info@abaargroup.com",
-    "url": "https://www.abaargroup.com/contact"
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "التجمع الثالث",
+      "addressLocality": "القاهرة",
+      "addressCountry": "EG"
+    },
+    "url": "https://abaargroup.org/contact"
   }), [initialConfig]);
 
   useEffect(() => {
@@ -149,7 +157,7 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
     <main className="bg-slate-50 min-h-screen font-arabic pb-20" dir="rtl">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* --- 1. Hero Section (Video Background) --- */}
+      {/* --- 1. Hero Section (تم تحديث الكلمات المفتاحية في العنوان) --- */}
       <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
         <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
           <source src="/image/project.m4v" type="video/mp4" />
@@ -159,18 +167,18 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
         <div className="relative z-10 text-center px-4">
           <motion.span 
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            className="inline-block px-6 py-2 bg-emerald-500 text-white text-sm font-black rounded-full mb-6 tracking-widest animate-bounce"
+            className="inline-block px-6 py-2 bg-emerald-500 text-white text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
           >
             تواصل مع أبار جروب
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl"
+            className="text-4xl md:text-6xl font-black text-white drop-shadow-2xl"
           >
-            تواصل <span className="text-emerald-400">معنا</span>
+            استشارات <span className="text-emerald-400">حفر وصيانة الآبار</span> وتوريد الطلمبات
           </motion.h1>
           <p className="text-sky-100 text-lg md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
-            خبراء حفر الآبار وحلول الطاقة الشمسية في خدمتكم على مدار الساعة
+            فريق خبراء <strong>توريد مستلزمات الآبار</strong> وحلول <strong>الطاقة الشمسية</strong> متاح لخدمتكم والإجابة على استفساراتكم الفنية.
           </p>
         </div>
       </section>
@@ -179,28 +187,31 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
       <section className="max-w-7xl mx-auto px-6 -translate-y-8 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Form Side: نموذج إرسال البيانات */}
+          {/* Form Side */}
           <div className="lg:col-span-7 order-2 lg:order-1">
             <motion.div 
               initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-              className="bg-white p-8 md:p-16 rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(8,112,184,0.1)] border border-slate-100 relative overflow-hidden"
+              className="bg-white p-8 md:p-16 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-[100px] -z-0 opacity-50" />
               <div className="relative z-10">
-                <h2 className="text-3xl font-black text-slate-800 mb-8">ابدأ مشروعك معنا</h2>
+                <h2 className="text-3xl font-black text-slate-800 mb-4">اطلب عرض سعر أو استشارة فنية</h2>
+                <p className="text-slate-500 mb-8 leading-relaxed">
+                    سواء كنت ترغب في <strong>حفر بئر مياه</strong> جديد أو تحتاج إلى <strong>صيانة آبار</strong> قائمة، اترك بياناتك وسيتواصل معك مهندس متخصص خلال أقل من 24 ساعة.
+                </p>
                 <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputField label="الاسم" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="أحمد محمد..." />
+                    <InputField label="الاسم بالكامل" name="name" value={formData.name} onChange={handleChange} error={errors.name} placeholder="أحمد محمد..." />
                     <InputField label="البريد الإلكتروني" name="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="example@mail.com" type="email" />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <InputField label="رقم الهاتف" name="phone" value={formData.phone} onChange={handleChange} placeholder="+20 1xxx xxxx" type="tel" />
                     <div className="space-y-3">
-                      <label className="text-sm font-black text-slate-700 mr-2">نوع الخدمة المطلوبة</label>
+                      <label className="text-sm font-black text-slate-700 mr-2">نوع الخدمة الفنية المطلوبة</label>
                       <div className="relative">
                         <select name="subject" value={formData.subject} onChange={handleChange} className="w-full p-5 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-sky-500 focus:bg-white outline-none appearance-none transition-all cursor-pointer text-slate-700 font-bold">
-                          <option value="">اختر من القائمة</option>
+                          <option value="">اختر من القائمة (حفر، صيانة، توريد...)</option>
                           {services.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}
                           <option value="استفسار عام">استفسار عام</option>
                         </select>
@@ -211,22 +222,22 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-sm font-black text-slate-700 mr-2">تفاصيل رسالتك</label>
-                    <textarea name="message" rows={5} value={formData.message} onChange={handleChange} className="w-full p-5 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-sky-500 focus:bg-white outline-none resize-none transition-all font-medium text-slate-700" placeholder="كيف يمكننا مساعدتك؟" />
+                    <label className="text-sm font-black text-slate-700 mr-2">تفاصيل طلبك أو استفسارك</label>
+                    <textarea name="message" rows={5} value={formData.message} onChange={handleChange} className="w-full p-5 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-sky-500 focus:bg-white outline-none resize-none transition-all font-medium text-slate-700" placeholder="اشرح لنا تفاصيل مشروعك أو مشكلة البئر الحالية..." />
                     {errors.message && <p className="text-red-500 text-xs mt-1 mr-2">{errors.message}</p>}
                   </div>
 
                   <AnimatePresence>
                     {formStatus === FORM_STATUS.SUCCESS && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="p-6 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center gap-4 border border-emerald-100">
-                        <CheckCircle className="shrink-0" /> تم الإرسال بنجاح، سنتواصل معك قريباً.
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="p-6 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center gap-4 border border-emerald-100 font-bold">
+                        <CheckCircle className="shrink-0" /> تم إرسال طلبك بنجاح، سيقوم فريق أبار جروب بالرد عليك قريباً.
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  <button type="submit" disabled={formStatus === FORM_STATUS.SENDING} className="w-full relative overflow-hidden bg-slate-900 text-white py-6 rounded-2xl text-xl font-black transition-all hover:bg-sky-600 disabled:bg-slate-300 shadow-xl shadow-slate-200 group">
+                  <button type="submit" disabled={formStatus === FORM_STATUS.SENDING} className="w-full relative overflow-hidden bg-slate-900 text-white py-6 rounded-2xl text-xl font-black transition-all hover:bg-sky-600 disabled:bg-slate-300 shadow-xl group">
                     <span className="relative z-10 flex items-center justify-center gap-3">
-                      {formStatus === FORM_STATUS.SENDING ? 'جاري الإرسال...' : 'قدم طلبك الآن'}
+                      {formStatus === FORM_STATUS.SENDING ? 'جاري إرسال البيانات...' : 'إرسال الطلب الآن'}
                     </span>
                   </button>
                 </form>
@@ -234,19 +245,19 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
             </motion.div>
           </div>
 
-          {/* Info Side: قنوات التواصل ومعلومات المقر */}
+          {/* Info Side */}
           <div className="lg:col-span-5 order-1 lg:order-2 space-y-8">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="bg-sky-950 text-white p-10 md:p-14 rounded-[3rem] shadow-2xl relative overflow-hidden">
               <Zap className="absolute -bottom-10 -left-10 w-48 h-48 text-white/5 rotate-12" />
-              <h3 className="text-3xl font-black mb-10 border-r-4 border-emerald-500 pr-4">قنوات التواصل</h3>
+              <h3 className="text-3xl font-black mb-10 border-r-4 border-emerald-500 pr-4">قنوات التواصل المباشر</h3>
               
               <div className="space-y-10">
-                <InfoBox icon={<MapPin />} label="المقر الرئيسي" value={initialConfig?.office_address || "عمارة 250, شارع الشباب, محلية 7, التجمع الثالث, القاهرة."} />
-                <InfoBox icon={<MapPin />} label="فرع الجيزة" value={initialConfig?.branch_address || "الرهاوي، منشأة القناطر، جيزة."} />
+                <InfoBox icon={<MapPin />} label="المقر الإداري الرئيسي" value={initialConfig?.office_address || "عمارة 250, شارع الشباب, محلية 7, التجمع الثالث, القاهرة."} />
+                <InfoBox icon={<MapPin />} label="مركز الصيانة (فرع الجيزة)" value={initialConfig?.branch_address || "الرهاوي، منشأة القناطر، جيزة."} />
                 
                 <InfoBox 
                   icon={<Clock />} 
-                  label="ساعات العمل" 
+                  label="مواعيد العمل الرسمية" 
                   value={
                     <div className="space-y-4">
                       <div>
@@ -261,13 +272,13 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
                   } 
                 />
 
-                <InfoBox icon={<Phone />} label="الخط الساخن" value={initialConfig?.contact_phone || "01211110240"} isLink href={`tel:${initialConfig?.contact_phone || "01211110240"}`} />
-                <InfoBox icon={<Mail />} label="البريد الإلكتروني" value={initialConfig?.contact_email || "info@abaargroup.com"} />
+                <InfoBox icon={<Phone />} label="الخط الساخن لآبار جروب" value={initialConfig?.contact_phone || "01211110240"} isLink href={`tel:${initialConfig?.contact_phone || "01211110240"}`} />
+                <InfoBox icon={<Mail />} label="الاستفسارات التجارية" value={initialConfig?.contact_email || "info@abaargroup.com"} />
               </div>
 
-              {/* --- قسم الأيقونات الاجتماعية المطور مع تأثيرات التوهج --- */}
+              {/* الاجتماعي */}
               <div className="mt-16 pt-10 border-t border-white/10 text-center">
-                <p className="font-black text-sky-300 mb-8 text-sm tracking-tighter uppercase">تابعنا على منصاتنا الاجتماعية</p>
+                <p className="font-black text-sky-300 mb-8 text-sm uppercase">تابع أبار جروب على منصات التواصل</p>
                 <div className="flex flex-wrap items-center justify-center gap-6">
                   {socialData.map((social) => (
                     <a
@@ -278,22 +289,34 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
                       className={`
                         relative w-12 h-12 flex items-center justify-center 
                         transition-all duration-300 ease-out p-1
-                        hover:scale-125
+                        hover:scale-125 rounded-full
+                        ${social.bgClass || ''}
                         ${social.hoverClass}
                       `}
-                      aria-label={social.label}
+                      aria-label={`Visit our ${social.label} page`}
                     >
                       <Image
                         src={social.imgSrc}
                         alt={social.label}
                         width={40}
                         height={40}
-                        className="object-contain w-full h-full"
+                        className={`object-contain w-full h-full ${social.iconClass || ''}`}
                       />
                     </a>
                   ))}
                 </div>
               </div>
+            </motion.div>
+
+            {/* سكشن إضافي لزيادة المحتوى (حل مشكلة Thin Content) */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
+               <div className="flex items-center gap-4 mb-4 text-sky-600">
+                  <Headphones size={32} />
+                  <h4 className="font-black text-xl">دعم فني متخصص</h4>
+               </div>
+               <p className="text-slate-600 text-sm leading-loose">
+                  نحن في <strong>أبار جروب</strong> لا نكتفي ببيع المنتجات، بل نقدم <strong>استشارات صيانة الآبار</strong> مجاناً لعملائنا. تواصل معنا لمناقشة أفضل أنواع <strong>طلمبات المياه</strong> أو لتصميم محطة <strong>طاقة شمسية</strong> تتناسب مع احتياجاتك الزراعية.
+               </p>
             </motion.div>
           </div>
         </div>
@@ -302,7 +325,7 @@ export default function ContactClient({ initialConfig }: ContactClientProps) {
   );
 }
 
-// --- المكونات المساعدة (Helper Components) لضمان نظافة الكود ---
+// --- المكونات المساعدة ---
 
 function InputField({ label, name, value, onChange, error, placeholder, type = "text" }: any) {
   return (

@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ImageOff } from 'lucide-react';
+import { ArrowLeft, ImageOff, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import StartAction from '@/components/StartAction';
 
 // تعريف الواجهة للخدمة
 interface Service {
@@ -32,14 +31,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
   const shortDescriptionMatch = service.description.match(/([\s\S]*?)---/);
   const rawDescription = shortDescriptionMatch ? shortDescriptionMatch[1].trim() : service.description.split("\n")[0].trim();
 
-  // التعديل هنا: حذف "وصف قصير للمعاينة" مع أي نقطتين أو مسافات تليها، ثم تنظيف المارك داون
+  // حذف "وصف قصير للمعاينة" وتنظيف رموز المارك داون
   const cleanDescription = rawDescription
-    .replace(/وصف قصير للمعاينة[:：]?\s*/g, '') // هذا السطر يحذف العبارة المطلوبة
-    .replace(/(\#+|\*|\-|\_|\`|\[|\]|\(|\)|\>)/g, '') // تنظيف رموز المارك داون
+    .replace(/وصف قصير للمعاينة[:：]?\s*/g, '')
+    .replace(/(\#+|\*|\-|\_|\`|\[|\]|\(|\)|\>)/g, '')
     .trim();
 
   return (
-    <section className="relative w-full py-16 lg:py-24 overflow-hidden bg-white border-b border-slate-50 last:border-0">
+    <section 
+      itemScope 
+      itemType="https://schema.org/Service"
+      className="relative w-full py-16 lg:py-24 overflow-hidden bg-white border-b border-slate-50 last:border-0"
+    >
       {/* الزخرفة الخلفية الدائرية */}
       <div className={`absolute top-0 ${isEven ? 'right-0' : 'left-0'} w-1/3 h-full opacity-[0.03] pointer-events-none select-none hidden lg:block`}>
         <svg viewBox="0 0 500 500" className="w-full h-full text-[#0c2461]">
@@ -52,7 +55,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
       <div className="container mx-auto px-6 relative z-10">
         <div className={`flex flex-col ${isEven ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 lg:gap-24`}>
           
-          {/* الجانب البصري: الصورة */}
+          {/* الجانب البصري: الصورة مع تحسين الـ Alt لـ SEO */}
           <motion.div 
             initial={{ x: isEven ? 100 : -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -60,22 +63,27 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
             viewport={{ once: true, margin: "-100px" }}
             className="w-full lg:w-1/2"
           >
-            <div className="w-full overflow-hidden rounded-[2.5rem] shadow-2xl shadow-blue-900/5 group">
-  <Image
-    src={service.image_url}
-    alt={service.title}
-    // نضع قيم 0 هنا ونستخدم التنسيق أدناه للتحكم الفعلي
-    width={0}
-    height={0}
-    sizes="100vw"
-    style={{ width: '100%', height: 'auto' }} 
-    className="transition-transform duration-700 group-hover:scale-105"
-    priority={index < 2}
-  />
-</div>
+            <div className="w-full overflow-hidden rounded-[2.5rem] shadow-2xl shadow-blue-900/5 group relative border-4 border-slate-50">
+              <Image
+                itemProp="image"
+                src={service.image_url}
+                alt={`تنفيذ خدمة ${service.title} - شركة أبار جروب لحفر وصيانة الآبار`}
+                width={800}
+                height={600}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ width: '100%', height: 'auto' }} 
+                className="transition-transform duration-700 group-hover:scale-105"
+                priority={index < 2}
+              />
+              {/* شارة جودة تظهر فوق الصورة */}
+              <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                 <span className="text-[12px] font-black text-slate-800">خدمة معتمدة</span>
+              </div>
+            </div>
           </motion.div>
 
-          {/* الجانب النصي: المحتوى */}
+          {/* الجانب النصي: المحتوى مع Microdata */}
           <motion.div 
             initial={{ x: isEven ? -100 : 100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -84,23 +92,36 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
             className="w-full lg:w-1/2 text-right"
           >
             <div className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-sm font-bold mb-6">
-              خدمة رقم {index + 1}
+              قسم {service.title}
             </div>
 
-            <h2 className="text-3xl md:text-5xl font-black text-[#1a365d] mb-6 leading-tight">
+            <h2 itemProp="name" className="text-3xl md:text-5xl font-black text-[#1a365d] mb-6 leading-tight">
               {service.title}
             </h2>
             
-            <p className="text-slate-600 text-lg md:text-xl leading-relaxed mb-10">
+            <p itemProp="description" className="text-slate-600 text-lg md:text-xl leading-relaxed mb-10">
               {cleanDescription}
             </p>
 
-            {/* زر قراءة المزيد */}
+            {/* سطر إضافي لتقوية الـ SEO (ثابت في كل البطاقات لزيادة كثافة الكلمات) */}
+            <div className="flex flex-wrap gap-4 mb-10">
+               <div className="flex items-center gap-2 text-slate-500 text-sm font-bold">
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                  تجهيز مستلزمات كاملة
+               </div>
+               <div className="flex items-center gap-2 text-slate-500 text-sm font-bold">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  صيانة دورية معتمدة
+               </div>
+            </div>
+
+            {/* زر قراءة المزيد: تحسين النص ليكون وصفياً (Descriptive Link) */}
             <Link 
               href={`/service/${service.slug}`}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-bold rounded-2xl hover:bg-green-600 transition-all shadow-lg shadow-blue-900/20 group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-bold rounded-2xl hover:bg-emerald-600 transition-all shadow-lg shadow-blue-900/20 group"
+              aria-label={`عرض تفاصيل خدمة ${service.title}`}
             >
-              <span>قراءة المزيد</span>
+              <span>تفاصيل خدمة {service.title}</span>
               <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-2" />
             </Link>
           </motion.div>

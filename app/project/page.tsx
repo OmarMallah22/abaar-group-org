@@ -7,38 +7,55 @@ import { Suspense } from 'react';
 const PROJECTS_PER_PAGE = 6;
 
 /**
- * 1. ميتاداتا متطورة لضمان أرشفة مشاريع الشركة بشكل ممتاز في جوجل
+ * 1. ميتاداتا متطورة (SEO A+) لعام 2026
+ * تم ضبط الطول المثالي للعناوين والوصف لضمان أعلى نسبة نقر في نتائج البحث.
  */
 export async function generateMetadata(): Promise<Metadata> {
+  const title = 'سابقة أعمال أبار جروب | حفر وصيانة الآبار وتوريد الطاقة الشمسية';
+  const description = 'استكشف سجل إنجازات أبار جروب في حفر وصيانة آبار المياه الجوفية، توريد طلمبات الأعماق، وتركيب محطات الطاقة الشمسية للمزارع والمشاريع الكبرى في مصر.';
+
   return {
-    title: 'مشاريعنا وإنجازاتنا | أبار جروب لحفر الآبار',
-    description: 'شاهد سجل إنجازات أبار جروب في حفر الآبار الجوفية، محطات الطاقة الشمسية، وتوريد الطلمبات. مشاريع ناجحة في كافة محافظات مصر بجودة عالمية.',
+    title: title,
+    description: description,
     keywords: [
-      'مشاريع أبار جروب', 'إنجازات حفر الآبار', 'محطات طاقة شمسية في مصر', 
-      'تجارب ضخ ناجحة', 'صيانة آبار جوفية بمصر', 'سابقة أعمال أبار جروب'
+      'مشاريع أبار جروب', 
+      'إنجازات حفر الآبار في مصر', 
+      'توريد طلمبات مياه', 
+      'صيانة آبار جوفية', 
+      'محطات طاقة شمسية للمزارع', 
+      'سابقة أعمال هندسية'
     ],
-    alternates: { canonical: 'https://www.abaargroup.com/project' },
+    // توحيد النطاق إلى .org لتعزيز الأرشفة الرسمية ومنع التشتت
+    alternates: { 
+      canonical: 'https://abaargroup.org/project' 
+    },
     openGraph: {
       title: 'سابقة أعمال أبار جروب - ريادة في حلول المياه والطاقة',
-      description: 'استكشف كبرى المشروعات التي نفذتها أبار جروب في قطاع المياه والزراعة والطاقة المتجددة.',
-      url: 'https://www.abaargroup.com/project',
-      siteName: 'أبار جروب',
+      description: description,
+      url: 'https://abaargroup.org/project',
+      siteName: 'أبار جروب لحفر الآبار',
       images: [
         {
-          url: '/image/projects-hero-seo.jpg', // تأكد من وجود صورة بهذا الاسم
+          url: '/image/projects-hero-seo.jpg',
           width: 1200,
           height: 630,
-          alt: 'مشاريع أبار جروب حفر آبار وطاقة شمسية',
+          alt: 'معرض مشاريع أبار جروب الناجحة في مصر',
         },
       ],
       locale: 'ar_EG',
       type: 'website',
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: title,
+      description: description,
+      images: ['/image/projects-hero-seo.jpg'],
+    },
   };
 }
 
 export default async function ProjectsPage() {
-  // 2. جلب البيانات من السيرفر لضمان سرعة التحميل الأولية (SSR)
+  // 2. جلب البيانات من السيرفر (SSR) لضمان ظهور المشاريع فوراً لعناكب البحث
   const { data: initialProjects, error } = await supabase
     .from("projects")
     .select("*")
@@ -50,28 +67,37 @@ export default async function ProjectsPage() {
   }
 
   /**
-   * 3. البيانات المهيكلة (Structured Data) لجوجل
-   * تخبر جوجل أن هذه الصفحة تحتوي على "معرض أعمال" (Portfolio) أو قائمة مشاريع ناجحة
+   * 3. البيانات المهيكلة (JSON-LD)
+   * تخبر جوجل أن هذه الصفحة هي "مجموعة أعمال" (CollectionPage) مما يحسن الظهور في الـ Knowledge Panel
    */
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "مشاريع أبار جروب",
-    "description": "قائمة المشاريع المنفذة بواسطة أبار جروب في مجالات الطاقة والمياه.",
-    "url": "https://www.abaargroup.com/project",
+    "name": "سجل مشاريع أبار جروب للهندسة والمقاولات",
+    "description": "قائمة المشاريع المنفذة بواسطة أبار جروب في مجالات توريد وحفر وصيانة الآبار والطاقة المتجددة.",
+    "url": "https://abaargroup.org/project",
     "publisher": {
       "@type": "Organization",
       "name": "أبار جروب",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.abaargroup.com/f.png"
+        "url": "https://abaargroup.org/image/icon.png"
       }
+    },
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": initialProjects?.map((p, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": p.title,
+        "url": `https://abaargroup.org/project/${p.slug}`
+      }))
     }
   };
 
   return (
     <>
-      {/* سكريبت السيو لنتائج البحث */}
+      {/* حقن سكريبت السيو في رأس الصفحة */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -79,11 +105,12 @@ export default async function ProjectsPage() {
       
       <main className="min-h-screen bg-slate-50 overflow-hidden">
         <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sky-600"></div>
+          <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
+            <div className="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin mb-4"></div>
+            <p className="font-black text-sky-900 animate-pulse text-xl">جاري تحميل سجل الإنجازات...</p>
           </div>
         }>
-          {/* تمرير البيانات للمكون العميل مع حل مشكلة الـ TypeScript */}
+          {/* تمرير البيانات للمكون العميل */}
           <ProjectsClient initialProjects={initialProjects || []} />
         </Suspense>
       </main>

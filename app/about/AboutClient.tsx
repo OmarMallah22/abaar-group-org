@@ -6,7 +6,8 @@ import Link from 'next/link';
 import Slider from "react-slick";
 import { 
     Award, Target, User, Sun, CheckCircle, 
-    Users, ArrowLeft, Zap, ShieldCheck 
+    Users, ArrowLeft, Zap, ShieldCheck,
+    Wrench, Truck, Droplets
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,7 +17,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import StartAction from '@/components/StartAction';
 
-// --- تعريف الأنواع لحل مشكلة Property 'initialTeam' does not exist ---
+// --- تعريف الأنواع ---
 interface AboutClientProps {
     initialTeam: any[];
     initialStats: {
@@ -28,30 +29,28 @@ interface AboutClientProps {
 }
 
 const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) => {
-    // --- حالات البيانات (States) ---
     const [teamMembers, setTeamMembers] = useState<any[]>(initialTeam);
     const [isTeamLoading, setIsTeamLoading] = useState(initialTeam.length === 0);
     const [statsData, setStatsData] = useState(initialStats);
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // قائمة الخدمات المحدثة (12 خدمة شاملة)
+    // قائمة الخدمات المحدثة بكلمات مفتاحية قوية لـ SEO
     const allServices = [
-        'حفر آبار المياه وتطهيرها',
-        'صيانة آبار المياه الجوفية',
+        'حفر آبار المياه وتطهيرها الشامل',
+        'صيانة آبار المياه الجوفية وتطويرها',
         'توريد وتركيب طلمبات ومواتير أعماق',
-        'محطات الطاقة الشمسية المتكاملة',
-        'توريد ألواح الطاقة الشمسية',
-        'توريد إنفرترات الطاقة الشمسية',
-        'الدراسات الجيوفيزيائية وجسات التربة',
-        'تصوير الآبار تليفزيونيًا',
-        'توريد مواسير الآبار: سيملس وحديد',
-        'مواسير بلاستيك UPVC',
-        'كابلات طلمبات أعماق',
-        'تجارب الضخ المعتمدة'
+        'محطات الطاقة الشمسية المتكاملة للمزارع',
+        'توريد ألواح الطاقة الشمسية عالية الكفاءة',
+        'توريد إنفرترات الطاقة الشمسية المعتمدة',
+        'الدراسات الجيوفيزيائية وجسات التربة دقيقة',
+        'تصوير الآبار تليفزيونيًا لتحديد الأعطال',
+        'توريد مواسير الآبار: سيملس وحديد معالج',
+        'مواسير بلاستيك UPVC بمواصفات عالمية',
+        'كابلات طلمبات أعماق تتحمل الخدمة الشاقة',
+        'تجارب الضخ المعتمدة لتقييم البئر'
     ];
 
-    // --- منطق جلب البيانات (الفريق + الإحصائيات) في حال التحديث ---
     useEffect(() => {
         const fetchData = async () => {
             if (initialTeam.length > 0) return;
@@ -86,11 +85,9 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                 setIsTeamLoading(false);
             }
         };
-
         fetchData();
     }, [initialTeam]);
 
-    // --- منطق WebGL الخاص بخلفية الهيرو ---
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -175,28 +172,47 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
 
     return (
         <div className="bg-white min-h-screen font-arabic" dir="rtl">
+            {/* إضافة بيانات Schema للشركة لتحسين الأرشفة */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "AboutPage",
+                        "mainEntity": {
+                            "@type": "Organization",
+                            "name": "أبار جروب لحفر وصيانة الآبار",
+                            "description": "شركة رائدة في حفر وصيانة آبار المياه وتوريد طلمبات الطاقة الشمسية في مصر منذ 1999.",
+                            "url": "https://abaargroup.org"
+                        }
+                    })
+                }}
+            />
+
             {/* --- Hero Section --- */}
             <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
                 <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
                     <source src="/image/project.m4v" type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
+                <canvas ref={canvasRef} className="absolute inset-0 z-[2] opacity-30 pointer-events-none" />
                 
                 <div className="relative z-10 text-center px-4">
                     <motion.span 
                         initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                        className="inline-block px-6 py-2 bg-emerald-500 text-white text-sm font-black rounded-full mb-6 tracking-widest animate-bounce"
+                        className="inline-block px-6 py-2 bg-emerald-500 text-white text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
                     >
-                        أبار جروب
+                        خبراء حفر وصيانة الآبار
                     </motion.span>
+                    {/* تحديث H1 ليكون غنياً بالكلمات المفتاحية */}
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl"
+                        className="text-4xl md:text-7xl font-black text-white drop-shadow-2xl"
                     >
-                        من <span className="text-emerald-400">نحن</span>
+                        أبار جروب | ريادة في <span className="text-emerald-400">حفر وتوريد</span> الآبار
                     </motion.h1>
                     <p className="text-sky-100 text-lg md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
-                        خبراء حلول المياه والطاقة منذ عام 1999، نروي المستقبل بإمكانيات اليوم.
+                        نحن ملتزمون بـ <strong>توريد طلمبات المياه</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة منذ عام 1999.
                     </p>
                 </div>
             </section>
@@ -206,9 +222,12 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div className="text-right order-2 lg:order-1">
-                            <h2 className="text-4xl md:text-5xl font-black text-blue-900 mb-8 leading-tight">مرحباً بكم في آبار جروب</h2>
+                            {/* تحديث H2 ليشمل الكلمات الأساسية */}
+                            <h2 className="text-3xl md:text-5xl font-black text-blue-900 mb-8 leading-tight">
+                                ريادة مصرية في حفر وصيانة الآبار وتوريد معداتها
+                            </h2>
                             <p className="text-xl text-slate-600 leading-loose mb-10">
-                                آبار جروب شركة مصرية رائدة متخصصة في حفر وصيانة آبار المياه الجوفية وتوريد حلول الطاقة الشمسية المتكاملة. بخبرة تمتد لعقود، نلتزم بتقديم أعلى معايير الجودة لعملائنا.
+                                آبار جروب هي شريكك الموثوق في <strong>صيانة وتطهير آبار المياه</strong> الجوفية. نحن نمتلك الخبرة الفنية والمعدات الحديثة لضمان <strong>توريد كافة مستلزمات الآبار</strong> وحلول الطاقة المتجددة في كافة أنحاء مصر.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {allServices.map((service) => (
@@ -219,8 +238,14 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                                 ))}
                             </div>
                         </div>
-                        <div className="relative aspect-square rounded-[60px] overflow-hidden shadow-2xl order-1 lg:order-2">
-                            <Image src="/image/about.jpeg" alt="Abar Group Team" fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
+                        <div className="relative aspect-square rounded-[60px] overflow-hidden shadow-2xl order-1 lg:order-2 border-8 border-slate-50">
+                            <Image 
+                                src="/image/about.jpeg" 
+                                alt="فريق عمل شركة أبار جروب المتخصص في حفر وصيانة الآبار وتوريد الطلمبات في مصر" 
+                                fill 
+                                className="object-cover transition-transform duration-700 hover:scale-105" 
+                                sizes="(max-width: 768px) 100vw, 50vw" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -228,12 +253,11 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
 
             {/* --- Leadership Team Section --- */}
             <section className="py-24 bg-[#f8fafc] relative overflow-hidden border-y border-slate-100">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-blue-50/50 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-50/50 blur-[100px] rounded-full translate-x-1/2 translate-y-1/2"></div>
-
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-blue-900 mb-4">فريقنا القيادي</h2>
+                        <h2 className="text-3xl md:text-5xl font-black text-blue-900 mb-4">
+                            خبراء أبار جروب في هندسة المياه والطاقة
+                        </h2>
                         <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-emerald-500 mx-auto rounded-full"></div>
                     </div>
 
@@ -253,7 +277,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                                                 <h3 className="text-2xl md:text-3xl font-black text-blue-900 mb-4 group-hover:text-emerald-600 transition-colors">{member.name}</h3>
                                                 <div className="inline-block">
                                                     <p className="text-emerald-600 text-base md:text-lg font-bold bg-emerald-50 px-6 py-2 rounded-2xl border border-emerald-100/50 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
-                                                        {member.position_key || 'عضو الفريق القيادي'}
+                                                        {member.position_key || 'خبير حفر وصيانة'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -274,9 +298,9 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full"></div>
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center relative z-10">
                     {[
-                        { icon: Award, num: statsData.years, label: "سنة خبرة" },
-                        { icon: Target, num: statsData.projects, label: "مشروع ناجح" },
-                        { icon: Users, num: statsData.clients, label: "عميل راضٍ" },
+                        { icon: Award, num: statsData.years, label: "سنة خبرة في الحفر" },
+                        { icon: Target, num: statsData.projects, label: "مشروع صيانة وتوريد" },
+                        { icon: Users, num: statsData.clients, label: "عميل راضٍ عنا" },
                         { icon: Sun, num: statsData.solar, label: "محطة طاقة شمسية" },
                     ].map((stat, i) => (
                         <div key={i} className="group cursor-default">
@@ -285,6 +309,16 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                             <div className="font-bold opacity-90 text-white text-sm md:text-base">{stat.label}</div>
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* سكشن إضافي لزيادة النص وتغطية الـ Thin Content */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-6 text-center max-w-4xl">
+                    <h2 className="text-3xl font-bold mb-8 text-blue-900">نحن نؤمن بأهمية كل قطرة مياه</h2>
+                    <p className="text-lg text-slate-600 leading-loose">
+                        عملية <strong>حفر الآبار</strong> تتطلب دقة هندسية عالية، ونحن في أبار جروب نستخدم تقنيات التصوير التليفزيوني لفحص البئر قبل وبعد الصيانة للتأكد من النتائج واقعياً. التزامنا بـ <strong>توريد طلمبات أصلية</strong> وتركيب أنظمة <strong>الطاقة الشمسية</strong> يضمن لعملائنا استدامة مائية بأقل التكاليف.
+                    </p>
                 </div>
             </section>
 

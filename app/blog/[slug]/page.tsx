@@ -9,8 +9,7 @@ interface Props {
 }
 
 /**
- * 1. دالة جلب البيانات من السيرفر
- * تدعم فك تشفير الـ Slug العربي بشكل صحيح
+ * 1. دالة جلب بيانات المقال من السيرفر
  */
 async function getArticle(slug: string) {
   const decodedSlug = decodeURIComponent(slug);
@@ -24,32 +23,50 @@ async function getArticle(slug: string) {
 }
 
 /**
- * 2. توليد الميتا داتا الديناميكية (SEO)
- * تضمن ظهور العنوان والوصف والصورة في محركات البحث ومواقع التواصل
+ * 2. توليد الميتا داتا الديناميكية (SEO A+)
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = await getArticle(params.slug);
 
   if (!article) return { title: 'المقال غير موجود | أبار جروب' };
 
+  // تحسين العنوان والوصف ليكون مثالياً لمحركات البحث
+  const title = article.seo_title || `${article.title} | مدونة أبار جروب الفنية`;
+  const description = article.meta_description || article.content.substring(0, 160).replace(/[#*]/g, '');
+
   return {
-    title: article.seo_title || article.title,
-    description: article.meta_description || "تعرف على أحدث تقنيات حفر الآبار وصيانتها وحلول الطاقة الشمسية مع أبار جروب.",
-    alternates: { canonical: `https://www.abaargroup.com/blog/${params.slug}` },
-    robots: { index: true, follow: true },
+    title: title,
+    description: description,
+    // توحيد النطاق إلى .org لتقوية الأرشفة ومنع التشتت
+    alternates: { 
+      canonical: `https://abaargroup.org/blog/${params.slug}` 
+    },
+    robots: { 
+        index: true, 
+        follow: true,
+        'max-image-preview': 'large' 
+    },
     openGraph: {
-      title: article.title,
-      description: article.meta_description || "",
-      url: `https://www.abaargroup.com/blog/${params.slug}`,
+      title: title,
+      description: description,
+      url: `https://abaargroup.org/blog/${params.slug}`,
       type: 'article',
       publishedTime: article.created_at,
       modifiedTime: article.updated_at,
-      images: [{ url: article.image, width: 1200, height: 630, alt: article.title }],
+      authors: ['فريق أبار جروب'],
+      images: [
+        { 
+          url: article.image, 
+          width: 1200, 
+          height: 630, 
+          alt: `دراسة فنية حول ${article.title}` 
+        }
+      ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
-      description: article.meta_description || "",
+      title: title,
+      description: description,
       images: [article.image],
     },
   };
@@ -61,8 +78,7 @@ export default async function Page({ params }: Props) {
   if (!article) notFound();
 
   /**
-   * 3. البيانات المهيكلة (JSON-LD)
-   * تساعد جوجل على فهم أن الصفحة مقال (BlogPosting) لعرضها في نتائج البحث المتقدمة
+   * 3. البيانات المهيكلة المتقدمة (JSON-LD) لرفع تقييم جوجل
    */
   const jsonLd = {
     "@context": "https://schema.org",
@@ -74,17 +90,20 @@ export default async function Page({ params }: Props) {
     "author": { 
       "@type": "Organization", 
       "name": "أبار جروب",
-      "url": "https://www.abaargroup.com"
+      "url": "https://abaargroup.org"
     },
     "publisher": {
       "@type": "Organization",
       "name": "أبار جروب",
-      "logo": { "@type": "ImageObject", "url": "https://www.abaargroup.com/f.png" }
+      "logo": { 
+        "@type": "ImageObject", 
+        "url": "https://abaargroup.org/image/icon.png" 
+      }
     },
     "description": article.meta_description,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.abaargroup.com/blog/${params.slug}`
+      "@id": `https://abaargroup.org/blog/${params.slug}`
     }
   };
 
@@ -94,7 +113,6 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* تمرير البيانات للمكون العميل مع حل مشكلة الـ Interface */}
       <ArticleDetailsClient initialArticle={article} />
     </>
   );

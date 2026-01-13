@@ -4,17 +4,24 @@ import { supabase } from '@/lib/supabase';
 import ArticlesClient from './ArticlesClient'; 
 import { Suspense } from 'react';
 
-// 1. ميتاداتا ديناميكية ومتقدمة للسيو
+/**
+ * 1. ميتاداتا متقدمة وديناميكية (SEO)
+ * تم تحديث العنوان والوصف ليشمل الكلمات المفتاحية الناقصة وضبط الطول المثالي.
+ */
 export async function generateMetadata(): Promise<Metadata> {
+  const title = 'مدونة أبار جروب | حفر وصيانة الآبار وتوريد الطاقة الشمسية في مصر';
+  const description = 'دليلك الشامل لتقنيات حفر وصيانة آبار المياه الجوفية، توريد طلمبات الأعماق، وتصميم محطات الطاقة الشمسية للمزارع في مصر بأفضل تكلفة وأعلى جودة.';
+
   return {
-    title: 'مقالات أبار جروب | دليل حفر الآبار والطاقة الشمسية في مصر',
-    description: 'دليلك الشامل لتقنيات حفر وصيانة آبار المياه الجوفية، تكلفة الحفر، تراخيص الآبار، وأفضل حلول الطاقة الشمسية للمزارع في مصر.',
+    title: title,
+    description: description,
     keywords: [
-      'حفر آبار مياه', 'ترخيص بئر مياه في مصر', 'طلمبات غاطسة', 
-      'أسعار حفر الآبار 2025', 'طاقة شمسية للآبار', 'صيانة آبار جوفية',
-      'طلمبات شاكتي الهندية', 'طلمبات فيرات'
+      'حفر آبار مياه', 'صيانة آبار جوفية', 'توريد طلمبات أعماق', 
+      'أسعار حفر الآبار 2026', 'طاقة شمسية للآبار', 'تطهير آبار المياه',
+      'طلمبات شاكتي', 'تراخيص الآبار في مصر', 'أبار جروب'
     ],
-    alternates: { canonical: 'https://www.abaargroup.com/blog' },
+    // توحيد النطاق إلى .org لتقوية الأرشفة
+    alternates: { canonical: 'https://abaargroup.org/blog' },
     robots: {
       index: true,
       follow: true,
@@ -27,16 +34,16 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: 'مركز المعرفة - أبار جروب لحفر الآبار',
-      description: 'اكتشف أحدث المقالات والدراسات الفنية حول عالم الآبار والطاقة الشمسية في مصر.',
-      url: 'https://www.abaargroup.com/blog',
+      title: 'مركز المعرفة الفني - أبار جروب لحفر الآبار وتوريد الطلمبات',
+      description: description,
+      url: 'https://abaargroup.org/blog',
       siteName: 'أبار جروب',
       images: [
         {
           url: '/image/blog-hero-seo.jpg',
           width: 1200,
           height: 630,
-          alt: 'مدونة أبار جروب لحفر الآبار',
+          alt: 'مدونة أبار جروب لحفر وصيانة الآبار',
         },
       ],
       locale: 'ar_EG',
@@ -44,54 +51,58 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'مدونة أبار جروب',
-      description: 'دليلك الفني لحفر الآبار والطاقة الشمسية.',
+      title: title,
+      description: description,
       images: ['/image/blog-hero-seo.jpg'],
     },
   };
 }
 
 export default async function BlogPage() {
-  // 2. جلب البيانات من السيرفر (SSR) لضمان ظهور المقالات في الـ HTML الأولي
+  // 2. جلب البيانات من السيرفر (SSR) لضمان الأرشفة الكاملة للمقالات (Indexation)
+  // جلب أول 12 مقالاً لضمان وجود محتوى كافٍ (Content Density) في الصفحة الأولى
   const { data: initialArticles, count, error } = await supabase
     .from("articles")
     .select("id, slug, title, category, image, meta_description, created_at, seo_title", { count: "exact" })
     .eq("status", "published")
     .order("created_at", { ascending: false })
-    .range(0, 11); // جلب أول 12 مقالاً لملء الصفحة بشكل جيد
+    .range(0, 11); 
 
   if (error) {
     console.error("Error fetching initial articles:", error);
   }
 
+  /**
+   * 3. البيانات المهيكلة (Structured Data) لجوجل
+   * تم تحسينها لتعريف "المدونة" و "الناشر" بشكل رسمي بالنطاق الجديد
+   */
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "مدونة أبار جروب الفنية",
+    "description": "دليل متخصص حول حفر وصيانة الآبار وحلول الطاقة الشمسية في مصر",
+    "url": "https://abaargroup.org/blog",
+    "publisher": {
+      "@type": "Organization",
+      "name": "أبار جروب",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://abaargroup.org/image/icon.png"
+      }
+    }
+  };
+
   return (
     <>
-      {/* 3. إضافة البيانات المهيكلة (Structured Data) لجوجل */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Blog",
-            "name": "مدونة أبار جروب",
-            "description": "دليل تقني حول حفر الآبار والطاقة الشمسية في مصر",
-            "url": "https://www.abaargroup.com/blog",
-            "publisher": {
-              "@type": "Organization",
-              "name": "أبار جروب",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://www.abaargroup.com/f.png"
-              }
-            }
-          })
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
       <Suspense fallback={
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
           <div className="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin mb-4"></div>
-          <p className="font-black text-sky-600 animate-pulse text-2xl">جاري تهيئة مركز المعرفة...</p>
+          <p className="font-black text-sky-900 animate-pulse text-2xl">جاري تحميل مركز المعرفة...</p>
         </div>
       }>
         <ArticlesClient 
