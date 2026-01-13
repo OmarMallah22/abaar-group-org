@@ -154,7 +154,6 @@ const ServicesClient: React.FC<ServicesClientProps> = ({ initialServices }) => {
         <div className="absolute inset-0 bg-gradient-to-b from-sky-950/80 via-transparent to-slate-50 z-[1]" />
         
         {/* خلفية WebGL التفاعلية */}
-        <canvas ref={canvasRef} className="absolute inset-0 z-[2] opacity-30 pointer-events-none" />
 
         <div className="relative z-10 text-center px-4">
           <motion.div

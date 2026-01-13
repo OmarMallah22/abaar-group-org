@@ -195,7 +195,6 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                     <source src="/image/project.m4v" type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
-                <canvas ref={canvasRef} className="absolute inset-0 z-[2] opacity-30 pointer-events-none" />
                 
                 <div className="relative z-10 text-center px-4">
                     <motion.span 

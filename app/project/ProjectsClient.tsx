@@ -140,7 +140,6 @@ export default function ProjectsClient({ initialProjects }: { initialProjects: P
 
       {/* 1. Hero Section - مع خلفية WebGL وتحسين الكلمات المفتاحية */}
       <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
-          <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-40 pointer-events-none" />
           <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-30">
             <source src="/image/project.m4v" type="video/mp4" />
           </video>
