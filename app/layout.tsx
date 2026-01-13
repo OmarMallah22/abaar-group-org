@@ -1,7 +1,9 @@
+// app/layout.tsx
 import './globals.css';
 import type { Metadata } from 'next';
 import { Suspense } from 'react'; 
 import { Noto_Naskh_Arabic } from 'next/font/google';
+import Script from 'next/script'; // استيراد مكون Script من Next.js
 import Header from '@/components/header'; 
 import Footer from '@/components/footer'; 
 import { CartProvider } from '@/app/context/CartContext';
@@ -14,11 +16,9 @@ const notoNaskh = Noto_Naskh_Arabic({
 });
 
 export const metadata: Metadata = {
-  // تم زيادة الطول ليشمل الكلمات المفتاحية: حفر، صيانة، طلمبات، طاقة شمسية
-  title: 'أبار جروب | حفر وصيانة آبار مياه، توريد طلمبات، وطاقة شمسية في مصر',
-  // الوصف المثالي (بين 120-160 حرفاً) لزيادة كثافة المحتوى
+  // العنوان الآن بطول 55 حرفاً (مثالي للسيو)
+  title: 'أبار جروب | حفر وصيانة الآبار وحلول الطاقة الشمسية بمصر',
   description: 'شركة أبار جروب الرائدة في حفر وصيانة آبار المياه، توريد وتركيب طلمبات الأعماق الغاطسة، وتصميم أنظمة الطاقة الشمسية المبتكرة في مصر بأعلى جودة وأفضل الأسعار.',
-  // إضافة الكلمات المفتاحية (تساعد بعض المحركات)
   keywords: 'حفر آبار مياه، صيانة آبار، توريد طلمبات مياه، طاقة شمسية مصر، أبار جروب، حفر وتوريد',
 
   icons: {
@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     apple: '/image/apple-icon.png',
   },
 
-  // إضافة الرابط الأصلي (Canonical URL) لتقوية الأرشفة
   alternates: {
     canonical: 'https://abaargroup.org',
   },
@@ -52,23 +51,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
 };
-<script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "أبار جروب",
-      "url": "https://abaargroup.org",
-      "logo": "https://abaargroup.org/image/icon.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+201XXXXXXXXX",
-        "contactType": "customer service"
-      }
-    })
-  }}
-/>
+
 export default function RootLayout({
   children,
 }: {
@@ -76,7 +59,48 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
+      <head>
+        {/* 1. حقن كود Google Tag Manager في الـ <head> */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-5HVLKFRT');
+          `}
+        </Script>
+
+        {/* البيانات المهيكلة (Schema) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "أبار جروب",
+              "url": "https://abaargroup.org",
+              "logo": "https://abaargroup.org/image/icon.png",
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+201211110240",
+                "contactType": "customer service"
+              }
+            })
+          }}
+        />
+      </head>
       <body className={`${notoNaskh.className} bg-background text-foreground min-h-screen flex flex-col`}>
+        {/* 2. حقن كود Noscript مباشرة بعد فتح الـ <body> */}
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5HVLKFRT"
+            height="0" 
+            width="0" 
+            style={{ display: 'none', visibility: 'hidden' }}
+          ></iframe>
+        </noscript>
+
         <CartProvider>
           <Header />
           <main className="flex-grow">

@@ -74,9 +74,7 @@ const socialData = [
     imgSrc: "/icons/X-removebg-preview (1).png", 
     label: "X",
     href: CONTACT_LINKS.twitter,
-    // اجعل الخلفية سوداء تماماً مع إطار خفيف لتظهر بوضوح
     bgClass: "bg-black border border-white/10", 
-    // تحويل الأيقونة السوداء المفرغة إلى بيضاء ناصعة
     iconClass: "invert brightness-200 scale-75", 
     hoverClass: "hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)]",
 },
@@ -90,7 +88,7 @@ const socialData = [
 ];
 
 const Footer = () => {
-  const pathname = usePathname(); // تعريف الـ pathname للحصول على المسار الحالي
+  const pathname = usePathname(); 
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -100,6 +98,35 @@ const Footer = () => {
   }, []);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // حل احترافي: تشفير البريد الإلكتروني ومنع الروبوتات من قراءته تماماً
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // تجميع الإيميل برمجياً فقط عند الضغط (لا يوجد mailto صريح في الكود)
+    const user = "info";
+    const domain = "abaargroup.com";
+    window.location.href = `mailto:${user}@${domain}`;
+  };
+
+  const renderSafeEmail = () => {
+    return (
+      <button 
+        onClick={handleEmailClick}
+        className="hover:text-emerald-500 transition-colors inline-flex items-center gap-0 text-sm"
+        style={{ direction: 'ltr' }} // لضمان الترتيب الصحيح من اليسار لليمين
+      >
+        <span>info</span>
+        <span>@</span>
+        <span>abaargroup.com</span>
+      </button>
+    );
+  };
+
+// داخل الـ JSX في قسم تواصل معنا:
+<li className="flex items-center gap-3 text-sm text-slate-400">
+  <Mail className="w-5 h-5 shrink-0 text-green-500" />
+  {renderSafeEmail()}
+</li>
 
   return (
     <footer className="bg-[#020617] text-slate-300 border-t border-white/5">
@@ -117,7 +144,7 @@ const Footer = () => {
             <p className="text-slate-400 text-sm leading-relaxed font-arabic">
               أبار جروب شركة مصرية رائدة في حفر وصيانة وتأهيل آبار المياه الجوفية، وتقديم حلول متكاملة للطاقة الشمسية، مع الالتزام بأعلى معايير الجودة.
             </p>
-           <div className="flex flex-wrap gap-4"> {/* زيادة الفجوة قليلاً */}
+           <div className="flex flex-wrap gap-4"> 
  {socialData.map((social) => (
   <a
     key={social.id}
@@ -127,7 +154,7 @@ const Footer = () => {
     className={`
       w-10 h-10 rounded-full flex items-center justify-center 
       transition-all duration-300 hover:shadow-lg hover:-translate-y-1
-      ${social.bgClass || ""} /* استخدام لون خلفية مخصص أو الافتراضي */
+      ${social.bgClass || ""} 
       ${social.hoverClass} group
     `}
   >
@@ -210,7 +237,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-sm text-slate-400">
                 <Mail className="w-5 h-5 shrink-0 text-green-500" />
-                <span>info@abargroup.com</span>
+                {renderSafeEmail()}
               </li>
             </ul>
           </div>
