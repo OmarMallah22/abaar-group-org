@@ -25,5 +25,6 @@ export default function robots(): MetadataRoute.Robots {
     },
     // ربط ملف خريطة الموقع الرسمي الذي أنشأناه ديناميكياً
     sitemap: 'https://abaargroup.org/sitemap.xml',
+    host: 'https://abaargroup.org',
   }
 }
