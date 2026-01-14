@@ -97,7 +97,7 @@ export default function ProductContent({ product: initialProduct, params }: Prod
     return () => { document.body.style.overflow = 'auto'; };
   }, [isLightboxOpen]);
 
-  // بناء بيانات Schema.org للمنتج (ضروري جداً للسيو)
+  // بناء بيانات Schema.org للمنتج
   const productSchema = useMemo(() => ({
     "@context": "https://schema.org/",
     "@type": "Product",
@@ -137,70 +137,69 @@ export default function ProductContent({ product: initialProduct, params }: Prod
   ];
 
   return (
-    <main className="bg-slate-100 min-h-screen font-arabic text-right pb-20" dir="rtl">
+    <main className="bg-slate-100 min-h-screen font-arabic text-right pb-20 overflow-x-hidden" dir="rtl">
       <Toaster position="bottom-center" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       
       {/* نمط الخلفية الشبكي */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center pointer-events-none opacity-20"></div>
       
-      <div className="relative max-w-7xl mx-auto px-4 pt-8 sm:px-6 lg:px-8 z-10">
+      <div className="relative max-w-7xl mx-auto px-4 pt-6 sm:px-6 lg:px-8 z-10">
         
         {/* شريط التحكم العلوي والمسار */}
-        <div className="flex flex-wrap items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <button 
             onClick={() => router.back()} 
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-700 font-bold rounded-2xl shadow-sm border border-slate-200 hover:bg-sky-50 transition-all group"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white text-slate-700 font-bold rounded-xl shadow-sm border border-slate-200 hover:bg-sky-50 transition-all group w-full sm:w-auto justify-center"
           >
             <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             <span>رجوع للمتجر</span>
           </button>
 
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-sm border border-white flex-grow sm:flex-grow-0 overflow-x-auto">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[12px] sm:text-sm font-bold text-slate-500 bg-white/90 backdrop-blur-md p-3 rounded-xl shadow-sm border border-white w-full sm:w-auto overflow-x-auto whitespace-nowrap scrollbar-hide">
             <Link href="/" className="hover:text-sky-600 transition-colors flex-shrink-0"><Home size={16} /></Link>
             <ChevronRight size={14} className="rtl:rotate-180 text-slate-300 flex-shrink-0" />
             {breadcrumbs.map((step: HierarchyStep, index: number) => (
               <React.Fragment key={index}>
-                <Link href={step.url.replace('.com', '.org')} className="hover:text-sky-600 transition-colors">{step.name}</Link>
+                <Link href={step.url.replace('.com', '.org')} className="hover:text-sky-600 transition-colors flex-shrink-0">{step.name}</Link>
                 <ChevronRight size={14} className="rtl:rotate-180 text-slate-300 flex-shrink-0" />
               </React.Fragment>
             ))}
-            <span className="text-sky-700 line-clamp-1">{product.name}</span>
+            <span className="text-sky-700 truncate max-w-[150px]">{product.name}</span>
           </nav>
         </div>
 
         {/* كارت المنتج الرئيسي */}
-        <div className="bg-white rounded-[3.5rem] shadow-2xl border border-slate-100 grid grid-cols-1 lg:grid-cols-12 overflow-visible mb-12">
+        <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] shadow-xl md:shadow-2xl border border-slate-100 grid grid-cols-1 lg:grid-cols-12 overflow-hidden mb-12">
           
-          {/* قسم الصورة - Sticky */}
-          <div className="lg:col-span-5 bg-slate-50 relative p-8 lg:p-14 flex flex-col items-center rounded-t-[3.5rem] lg:rounded-r-[3.5rem] lg:rounded-tl-none border-l border-slate-100">
+          {/* قسم الصورة */}
+          <div className="lg:col-span-5 bg-slate-50 relative p-6 md:p-10 lg:p-14 flex flex-col items-center border-b lg:border-b-0 lg:border-l border-slate-100">
             <div 
-              className="sticky top-28 w-full aspect-square rounded-[3rem] overflow-hidden bg-white shadow-xl border border-slate-200 group cursor-zoom-in transition-all duration-500 hover:shadow-2xl" 
+              className="lg:sticky lg:top-28 w-full aspect-square rounded-[1.5rem] md:rounded-[3rem] overflow-hidden bg-white shadow-lg border border-slate-200 group cursor-zoom-in transition-all duration-500 hover:shadow-xl" 
               onClick={() => setIsLightboxOpen(true)}
             >
               <Image 
                 src={product.image || '/placeholder.jpg'} 
-                alt={`${product.name} - توريد وتجهيز آبار المياه بأحدث المعدات`} 
+                alt={`${product.name} - توريد وتجهيز آبار المياه`} 
                 fill 
-                className="object-contain transition-all duration-700 group-hover:scale-110" 
-                style={{ objectPosition: 'center', padding: '40px' }} 
+                className="object-contain transition-all duration-700 group-hover:scale-110 p-6 md:p-10" 
                 priority
               />
-              <div className="absolute bottom-6 left-6 bg-slate-900/90 text-white p-3 rounded-2xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-                <ZoomIn size={24} />
+              <div className="absolute bottom-4 left-4 bg-slate-900/90 text-white p-2.5 rounded-xl opacity-0 lg:group-hover:opacity-100 transition-all">
+                <ZoomIn size={20} />
               </div>
-              <div className="absolute top-6 left-6 bg-emerald-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase shadow-lg">
+              <div className="absolute top-4 left-4 bg-emerald-500 text-white text-[9px] md:text-[10px] font-black px-3 py-1.5 rounded-full uppercase shadow-md">
                 {product.brand || 'منتج أصلي معتمد'}
               </div>
             </div>
           </div>
 
           {/* قسم التفاصيل والبيانات الفنية */}
-          <div className="lg:col-span-7 p-8 lg:p-16 flex flex-col bg-white rounded-b-[3.5rem] lg:rounded-l-[3.5rem] lg:rounded-br-none">
-            <div className="flex justify-between items-start gap-4 mb-8">
-              <div>
-                <h1 className="text-3xl lg:text-5xl font-black text-slate-900 leading-tight mb-4">{product.name}</h1>
-                <div className="flex items-center gap-2 text-slate-400 font-bold text-sm">
+          <div className="lg:col-span-7 p-6 md:p-10 lg:p-16 flex flex-col bg-white">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
+              <div className="flex-1">
+                <h1 className="text-2xl md:text-3xl lg:text-5xl font-black text-slate-900 leading-tight mb-3">{product.name}</h1>
+                <div className="flex items-center gap-2 text-slate-400 font-bold text-xs md:text-sm">
                   <ShieldCheck size={16} className="text-emerald-500" />
                   <span>ضمان الجودة من أبار جروب</span>
                 </div>
@@ -208,49 +207,50 @@ export default function ProductContent({ product: initialProduct, params }: Prod
               <button 
                 onClick={() => { 
                   navigator.clipboard.writeText(window.location.href); 
-                  toast.success("تم نسخ رابط المنتج بنجاح"); 
+                  toast.success("تم نسخ رابط المنتج"); 
                 }} 
-                className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-sky-600 transition-all shadow-sm border border-slate-100"
-                aria-label="Share Product"
+                className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-sky-600 transition-all border border-slate-100 self-end sm:self-start"
               >
-                <Share2 size={24} />
+                <Share2 size={20} />
               </button>
             </div>
 
-            {/* نظام التبويبات المطور */}
-            <div className="flex p-1.5 bg-slate-100 rounded-[1.5rem] mb-10 w-fit">
-              {[
-                { id: 'specs', label: 'المواصفات الفنية', icon: Settings },
-                { id: 'description', label: 'شرح المنتج', icon: FileText },
-                { id: 'guide', label: 'دليل الاستخدام', icon: Info },
-              ].map((tab) => (
-                <button 
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)} 
-                  className={`flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === tab.id ? 'bg-white text-sky-600 shadow-lg' : 'text-slate-500 hover:text-slate-800'}`}
-                >
-                  <tab.icon size={18} /> {tab.label}
-                </button>
-              ))}
+            {/* نظام التبويبات المطور - متجاوب مع التمرير */}
+            <div className="flex overflow-x-auto p-1 bg-slate-100 rounded-2xl mb-8 w-full scrollbar-hide">
+              <div className="flex min-w-full sm:min-w-0">
+                {[
+                  { id: 'specs', label: 'المواصفات', icon: Settings },
+                  { id: 'description', label: 'الشرح', icon: FileText },
+                  { id: 'guide', label: 'الدليل', icon: Info },
+                ].map((tab) => (
+                  <button 
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)} 
+                    className={`flex items-center justify-center gap-2 px-4 md:px-8 py-3 rounded-xl font-black text-xs md:text-sm transition-all whitespace-nowrap flex-1 ${activeTab === tab.id ? 'bg-white text-sky-600 shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                  >
+                    <tab.icon size={16} className="hidden sm:block" /> {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* محتوى التبويب المختار */}
-            <div className="flex-grow min-h-[300px]">
+            <div className="flex-grow min-h-[250px] md:min-h-[300px]">
               <AnimatePresence mode="wait">
                 {activeTab === 'specs' && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm bg-slate-50/30"
+                    className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-slate-50/30"
                   >
                     {product.attributes ? Object.entries(product.attributes).map(([key, value], index) => (
-                      <div key={key} className={`flex justify-between p-5 ${index % 2 === 0 ? 'bg-slate-50/50' : 'bg-white'} border-b border-slate-100 last:border-0`}>
-                        <span className="font-bold text-slate-600 flex items-center gap-3">
+                      <div key={key} className={`flex justify-between items-center p-4 md:p-5 ${index % 2 === 0 ? 'bg-slate-50/50' : 'bg-white'} border-b border-slate-100 last:border-0`}>
+                        <span className="font-bold text-slate-600 text-sm md:text-base flex items-center gap-2">
                           <div className="w-1.5 h-1.5 bg-sky-500 rounded-full"></div> {key}
                         </span>
-                        <span className="font-black text-slate-900">{String(value)}</span>
+                        <span className="font-black text-slate-900 text-sm md:text-base text-left">{String(value)}</span>
                       </div>
                     )) : (
-                      <div className="text-center py-16 text-slate-400 font-bold italic">لا توجد مواصفات فنية مسجلة حالياً.</div>
+                      <div className="text-center py-16 text-slate-400 font-bold italic">لا توجد مواصفات فنية حالياً.</div>
                     )}
                   </motion.div>
                 )}
@@ -258,24 +258,24 @@ export default function ProductContent({ product: initialProduct, params }: Prod
                 {activeTab === 'description' && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="prose prose-slate max-w-none bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 leading-[2.2] text-lg text-slate-700 font-medium"
+                    className="prose prose-slate max-w-none bg-slate-50 p-6 md:p-10 rounded-2xl border border-slate-100 leading-relaxed text-base md:text-lg text-slate-700 font-medium"
                   >
-                    <ReactMarkdown>{product.Description || 'يتوفر قريباً شرح تفصيلي لكافة مميزات واستخدامات هذا المنتج.'}</ReactMarkdown>
+                    <ReactMarkdown>{product.Description || 'يتوفر قريباً شرح تفصيلي لكافة المميزات.'}</ReactMarkdown>
                   </motion.div>
                 )}
 
                 {activeTab === 'guide' && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="bg-sky-50 p-10 rounded-[2.5rem] border border-sky-100"
+                    className="bg-sky-50 p-6 md:p-10 rounded-2xl border border-sky-100"
                   >
-                    <h4 className="text-sky-900 font-black mb-6 flex items-center gap-2">
-                       <Wrench size={20} /> نصائح فنية من خبراء أبار جروب:
+                    <h4 className="text-sky-900 font-black mb-4 flex items-center gap-2 text-sm md:text-base">
+                       <Wrench size={18} /> نصائح فنية من خبرائنا:
                     </h4>
-                    <ul className="space-y-4 text-sky-800 font-bold leading-relaxed list-disc list-inside">
+                    <ul className="space-y-3 text-sky-800 font-bold leading-relaxed list-disc list-inside text-sm md:text-base">
                       <li>تأكد من مطابقة المنتج لقطر البئر ونوع ملوحة المياه.</li>
-                      <li>يفضل التركيب بواسطة فني متخصص لضمان عدم خروج المنتج من الضمان.</li>
-                      <li>للحصول على أداء مثالي، نوصي باستخدام كابلات أصلية مع طلمبات الأعماق.</li>
+                      <li>يفضل التركيب بواسطة فني متخصص لضمان الضمان.</li>
+                      <li>نوصي باستخدام كابلات أصلية مع طلمبات الأعماق.</li>
                     </ul>
                   </motion.div>
                 )}
@@ -283,67 +283,62 @@ export default function ProductContent({ product: initialProduct, params }: Prod
             </div>
 
             {/* أزرار الإجراءات */}
-            <div className="mt-12 pt-10 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="mt-8 pt-8 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
-                onClick={() => { addToCart(product, quantity); toast.success("تمت الإضافة لسلة المشتريات"); }} 
-                className="bg-slate-900 text-white rounded-3xl h-16 font-black text-xl flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all shadow-xl active:scale-95"
+                onClick={() => { addToCart(product, quantity); toast.success("تمت الإضافة للسلة"); }} 
+                className="bg-slate-900 text-white rounded-2xl h-14 md:h-16 font-black text-base md:text-lg flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all shadow-lg active:scale-95"
               >
-                <ShoppingBag size={24} /> إضافة للسلة
+                <ShoppingBag size={20} /> إضافة للسلة
               </button>
               
               <button 
-                onClick={() => window.open(`https://wa.me/201211110240?text=استفسار فني بخصوص: ${product.name}`, '_blank')} 
-                className="border-3 border-slate-900 text-slate-900 rounded-3xl h-16 font-black text-lg flex items-center justify-center gap-3 hover:bg-slate-900 hover:text-white transition-all"
+                onClick={() => window.open(`https://wa.me/201211110240?text=استفسار فني: ${product.name}`, '_blank')} 
+                className="border-2 border-slate-900 text-slate-900 rounded-2xl h-14 md:h-16 font-black text-base md:text-lg flex items-center justify-center gap-3 hover:bg-slate-900 hover:text-white transition-all"
               >
-                <Tag size={24} /> استشارة فنية فورية
+                <Tag size={20} /> استشارة فنية
               </button>
             </div>
           </div>
         </div>
 
-        {/* سكشن المحتوى الجديد لزيادة الكلمات (SEO Expansion) */}
-        
-        <section className="bg-white rounded-[3.5rem] p-10 lg:p-20 shadow-xl mb-16 border border-slate-50">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">لماذا تشتري مستلزمات الآبار من أبار جروب؟</h2>
-            <div className="w-24 h-1.5 bg-emerald-500 mx-auto rounded-full"></div>
+        {/* سكشن SEO Expansion */}
+        <section className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-8 md:p-16 lg:p-20 shadow-lg mb-12 border border-slate-50">
+          <div className="max-w-4xl mx-auto text-center mb-10">
+            <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-4">لماذا تختار أبار جروب؟</h2>
+            <div className="w-16 h-1 bg-emerald-500 mx-auto rounded-full"></div>
           </div>
-          <div className="grid md:grid-cols-3 gap-12 text-center lg:text-right">
-            <div>
-              <Truck className="w-12 h-12 text-sky-600 mx-auto lg:mr-0 mb-6" />
-              <h4 className="text-xl font-black mb-4">توريد سريع لكافة المحافظات</h4>
-              <p className="text-slate-600 leading-relaxed font-bold">نلتزم بـ <strong>توريد طلمبات المياه</strong> وكافة المستلزمات إلى موقع مشروعك في وقت قياسي لضمان عدم توقف العمل.</p>
-            </div>
-            <div>
-              <Settings className="w-12 h-12 text-emerald-600 mx-auto lg:mr-0 mb-6" />
-              <h4 className="text-xl font-black mb-4">دعم فني متخصص في الصيانة</h4>
-              <p className="text-slate-600 leading-relaxed font-bold">لا نقدم مجرد منتجات، بل نوفر خبرتنا في <strong>صيانة الآبار</strong> لمساعدتك في اختيار القطعة الأنسب لظروف بئرك المحددة.</p>
-            </div>
-            <div>
-              <ShieldCheck className="w-12 h-12 text-amber-500 mx-auto lg:mr-0 mb-6" />
-              <h4 className="text-xl font-black mb-4">ضمان حقيقي وقطع غيار أصلية</h4>
-              <p className="text-slate-600 leading-relaxed font-bold">كل ما نوفره من <strong>مستلزمات آبار</strong> وطاقة شمسية يأتي مع ضمان رسمي وقطع غيار أصلية تضمن لك العمر الطويل.</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            {[
+              { icon: Truck, color: 'text-sky-600', title: 'توريد سريع', desc: 'نلتزم بتوريد الطلمبات والمستلزمات في وقت قياسي لكافة المحافظات.' },
+              { icon: Settings, color: 'text-emerald-600', title: 'دعم فني', desc: 'نوفر خبرتنا في صيانة الآبار لمساعدتك في اختيار القطعة الأنسب.' },
+              { icon: ShieldCheck, color: 'text-amber-500', title: 'ضمان حقيقي', desc: 'كافة المنتجات تأتي مع ضمان رسمي وقطع غيار أصلية متوفرة.' }
+            ].map((item, i) => (
+              <div key={i} className="text-center lg:text-right">
+                <item.icon className={`w-10 h-10 ${item.color} mx-auto lg:mr-0 mb-4`} />
+                <h4 className="text-lg font-black mb-2">{item.title}</h4>
+                <p className="text-slate-600 leading-relaxed text-sm font-bold">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* قسم المنتجات المقترحة */}
         {relatedProducts.length > 0 && (
-          <div className="mt-24 mb-16 overflow-hidden">
-            <div className="flex items-center gap-4 mb-12 px-4">
-              <div className="bg-sky-100 p-4 rounded-2xl text-sky-600 shadow-inner"><Shuffle size={28} /></div>
-              <h2 className="text-2xl md:text-4xl font-black text-slate-900 font-arabic">منتجات قد تهمك في مشروعك القادم</h2>
+          <div className="mt-16 mb-12 overflow-hidden px-2">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="bg-sky-100 p-3 rounded-xl text-sky-600 shadow-inner"><Shuffle size={24} /></div>
+              <h2 className="text-xl md:text-3xl font-black text-slate-900 font-arabic">منتجات قد تهمك</h2>
             </div>
-            <div className="flex gap-8 overflow-x-auto pb-10 pt-2 px-4 scrollbar-hide snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex gap-4 md:gap-8 overflow-x-auto pb-6 pt-2 scrollbar-hide snap-x">
               {relatedProducts.map((item) => (
-                <Link key={item.id} href={`/product/${item.id}`} className="group bg-white p-6 rounded-[3rem] border border-slate-100 shadow-lg hover:shadow-2xl transition-all min-w-[300px] flex-shrink-0 snap-start">
-                  <div className="relative aspect-square rounded-[2.5rem] overflow-hidden bg-slate-50 mb-6 border border-slate-50">
-                    <Image src={item.image || '/placeholder.jpg'} alt={`${item.name} من شركة أبار جروب`} fill className="object-contain p-6 group-hover:scale-110 transition-all duration-700" />
+                <Link key={item.id} href={`/product/${item.id}`} className="group bg-white p-4 md:p-6 rounded-[2rem] border border-slate-100 shadow-md hover:shadow-xl transition-all min-w-[240px] md:min-w-[300px] flex-shrink-0 snap-start">
+                  <div className="relative aspect-square rounded-[1.5rem] overflow-hidden bg-slate-50 mb-4 border border-slate-50">
+                    <Image src={item.image || '/placeholder.jpg'} alt={item.name} fill className="object-contain p-4 group-hover:scale-110 transition-all duration-700" />
                   </div>
-                  <h3 className="font-black text-slate-800 text-lg group-hover:text-sky-600 transition-colors line-clamp-2 min-h-[3.5rem] flex items-center justify-center px-2 text-center leading-relaxed">{item.name}</h3>
-                  <div className="flex justify-center mt-6">
-                    <span className="inline-flex items-center gap-2 text-sm font-black text-white bg-slate-900 px-6 py-3 rounded-2xl group-hover:bg-emerald-600 transition-all">
-                      عرض المنتج <ArrowLeft size={18} className="rotate-180 transition-transform group-hover:-translate-x-1" />
+                  <h3 className="font-black text-slate-800 text-sm md:text-base group-hover:text-sky-600 transition-colors line-clamp-2 min-h-[3rem] text-center leading-relaxed">{item.name}</h3>
+                  <div className="flex justify-center mt-4">
+                    <span className="inline-flex items-center gap-2 text-[11px] md:text-xs font-black text-white bg-slate-900 px-4 py-2.5 rounded-xl group-hover:bg-emerald-600 transition-all">
+                      عرض المنتج <ArrowLeft size={14} className="rotate-180" />
                     </span>
                   </div>
                 </Link>
@@ -353,27 +348,27 @@ export default function ProductContent({ product: initialProduct, params }: Prod
         )}
       </div>
 
-      {/* نافذة Lightbox المحدثة */}
+      {/* نافذة Lightbox */}
       <AnimatePresence>
         {isLightboxOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-950/98 z-[200] flex items-center justify-center p-6 backdrop-blur-xl cursor-zoom-out"
+            className="fixed inset-0 bg-slate-950/98 z-[200] flex flex-col items-center justify-center p-4 backdrop-blur-xl cursor-zoom-out"
             onClick={() => setIsLightboxOpen(false)}
           >
+             <button 
+                onClick={() => setIsLightboxOpen(false)} 
+                className="absolute top-6 right-6 text-white flex items-center gap-2 font-black hover:text-emerald-400 transition-colors z-[210] p-2"
+              >
+                <span>إغلاق</span> <X size={32} />
+              </button>
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-6xl h-full max-h-[85vh] flex items-center justify-center"
+              className="relative w-full max-w-5xl aspect-square md:aspect-auto md:h-[80vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setIsLightboxOpen(false)} 
-                className="absolute -top-16 right-0 text-white flex items-center gap-3 font-black hover:text-emerald-400 transition-colors z-[210] p-3 group"
-              >
-                <span>إغلاق المعاينة</span> <X size={44} className="group-hover:rotate-90 transition-transform" />
-              </button>
-              <div className="relative w-full h-full shadow-2xl rounded-3xl overflow-hidden bg-white/5 border border-white/10">
-                <Image src={product.image || '/placeholder.jpg'} alt={product.name} fill className="object-contain p-4" quality={100} priority />
+              <div className="relative w-full h-full shadow-2xl rounded-2xl overflow-hidden bg-white/5">
+                <Image src={product.image || '/placeholder.jpg'} alt={product.name} fill className="object-contain p-2" quality={100} priority />
               </div>
             </motion.div>
           </motion.div>
