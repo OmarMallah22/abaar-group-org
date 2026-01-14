@@ -7,11 +7,11 @@ import { useRouter } from 'next/navigation';
 import { 
   MapPin, Calendar, User, ArrowRight, ShieldCheck, 
   Settings, Wrench, Droplets, Share2, Facebook, 
-  Copy, Home, ChevronLeft, Bookmark, Activity,Sun
+  Copy, Home, ChevronLeft, Bookmark, Activity, Sun
 } from 'lucide-react';
 import StartAction from '@/components/StartAction';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 /**
  * الواجهة البرمجية للمشروع
@@ -69,144 +69,142 @@ export default function ProjectDetailClient({ project }: { project: Project }) {
 
   const copyLink = () => {
     navigator.clipboard.writeText(currentUrl);
-    toast.success("تم نسخ رابط المشروع بنجاح");
+    toast.success("تم نسخ الرابط");
   };
 
   return (
-    <main className="min-h-screen bg-[#fcfcfd] font-arabic text-right relative" dir="rtl">
-      {/* حقن الـ Schema */}
+    <main className="min-h-screen bg-[#fcfcfd] font-arabic text-right relative overflow-x-hidden" dir="rtl">
+      <Toaster position="bottom-center" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }} />
       
       {/* مؤشر القراءة العلوي */}
-      <div className="fixed top-0 left-0 w-full h-1 z-[100] bg-slate-100">
-        <div className="h-full bg-emerald-500 transition-all duration-150" style={{ width: `${readingProgress}%` }} />
+      <div className="fixed top-0 left-0 w-full h-1 z-[110] bg-slate-100">
+        <div className="h-full bg-emerald-500 transition-all duration-100" style={{ width: `${readingProgress}%` }} />
       </div>
 
-      {/* 1. Hero Header - رأس الصفحة السينمائي */}
-      <section className="relative h-[45vh] md:h-[60vh] w-full overflow-hidden bg-[#0c2461]">
+      {/* 1. Hero Header */}
+      <section className="relative h-[50vh] md:h-[65vh] w-full overflow-hidden bg-[#0c2461]">
         <Image 
           src={project.image} 
-          alt={`تنفيذ مشروع ${project.title} - شركة أبار جروب`} 
+          alt={project.title} 
           fill 
-          className="object-cover opacity-30 scale-105" 
+          className="object-cover opacity-40 scale-105" 
           priority
+          sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#fcfcfd] via-[#0c2461]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#fcfcfd] via-[#0c2461]/60 to-transparent" />
         
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center z-10">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-6 text-center z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <span className="inline-flex items-center gap-2 px-6 py-2 bg-emerald-500 text-white text-xs font-black rounded-full mb-6 shadow-xl uppercase tracking-widest">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 md:px-6 md:py-2 bg-emerald-500 text-white text-[10px] md:text-xs font-black rounded-full mb-4 md:mb-6 shadow-xl uppercase tracking-widest">
               <ShieldCheck size={14} /> سجل الإنجازات المعتمد
             </span>
-            <h1 className="text-3xl md:text-6xl font-black text-white leading-tight drop-shadow-2xl max-w-4xl">
+            <h1 className="text-2xl md:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-2xl max-w-5xl px-2">
               {project.title}
             </h1>
           </motion.div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-20">
-        {/* 2. Breadcrumbs - مسار التنقل */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-3 text-sm font-bold text-slate-400 py-6 px-8 bg-white/90 backdrop-blur-md rounded-3xl -translate-y-1/2 border border-white shadow-xl w-fit mx-auto lg:mx-0">
-          <Link href="/" className="hover:text-sky-600 transition-colors"><Home size={18}/></Link>
-          <ChevronLeft size={16} className="text-slate-300 rotate-180" />
+      <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-20">
+        {/* 2. Breadcrumbs - تحسين التجاوب */}
+        <nav aria-label="Breadcrumb" className="relative z-30 flex items-center gap-2 text-[10px] md:text-sm font-bold text-slate-400 py-3 md:py-5 px-4 md:px-8 bg-white/95 backdrop-blur-md rounded-2xl md:rounded-3xl border border-slate-100 shadow-xl w-full md:w-fit mx-auto lg:mx-0 mt-[-2rem] md:mt-[-2.5rem]">
+          <Link href="/" className="hover:text-sky-600 transition-colors"><Home size={16}/></Link>
+          <ChevronLeft size={14} className="text-slate-300" />
           <Link href="/project" className="hover:text-sky-600 transition-colors">المشاريع</Link>
-          <ChevronLeft size={16} className="text-slate-300 rotate-180" />
-          <span className="text-sky-600 truncate max-w-[200px]">{project.title}</span>
+          <ChevronLeft size={14} className="text-slate-300" />
+          <span className="text-sky-600 truncate max-w-[120px] md:max-w-none">{project.title}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 mt-8 md:mt-12">
           
-          {/* العمود الرئيسي: التفاصيل والصورة */}
-          <div className="lg:col-span-8 space-y-12">
+          {/* العمود الرئيسي */}
+          <div className="lg:col-span-8 space-y-8 md:space-y-12">
             
-            {/* عرض الصورة كاملة */}
+            {/* الصورة الرئيسية */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative w-full aspect-video bg-white rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl group"
+              className="relative w-full aspect-video bg-white rounded-2xl md:rounded-[3rem] overflow-hidden border-4 md:border-8 border-white shadow-2xl group"
             >
               <Image 
                 src={project.image} 
-                alt={`${project.title} - توريد وصيانة آبار مياه`} 
+                alt={project.title} 
                 fill 
-                className="object-contain p-4 transition-transform duration-1000 group-hover:scale-105" 
+                className="object-cover transition-transform duration-1000 group-hover:scale-105" 
+                sizes="(max-width: 1024px) 100vw, 800px"
               />
-              <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/20">
-                 <Activity className="text-sky-600 animate-pulse" size={24} />
+              <div className="absolute top-4 right-4 md:top-8 md:right-8 bg-white/90 backdrop-blur-sm p-3 md:p-4 rounded-xl md:rounded-2xl shadow-lg">
+                 <Activity className="text-sky-600 animate-pulse" size={20} />
               </div>
             </motion.div>
 
             {/* تفاصيل المشروع النصية */}
-            <article className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl border border-slate-50">
-              <h2 className="text-2xl font-black text-[#0c2461] mb-8 border-r-8 border-emerald-500 pr-6">التقرير الفني للمشروع</h2>
-              <div className="text-slate-600 text-lg leading-[2.2] space-y-8 text-justify font-medium">
+            <article className="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-12 lg:p-16 shadow-xl border border-slate-50">
+              <h2 className="text-xl md:text-3xl font-black text-[#0c2461] mb-6 md:mb-8 border-r-4 md:border-r-8 border-emerald-500 pr-4 md:pr-6">التقرير الفني</h2>
+              <div className="text-slate-600 text-base md:text-lg lg:text-xl leading-relaxed md:leading-[2.2] space-y-6 md:space-y-8 text-justify font-medium">
                 <p>
                   يمثل هذا المشروع أحد إنجازات <strong>أبار جروب</strong> في مجال <strong>حفر وصيانة الآبار</strong> الجوفية. تم العمل على المشروع وفقاً لأعلى المعايير الهندسية لضمان استدامة تدفق المياه.
                 </p>
                 <p>{cleanDescription}</p>
                 <p>
-                  خلال مراحل التنفيذ، حرصنا على <strong>توريد طلمبات المياه</strong> الأصلية وتجهيز البئر بكافة المستلزمات التي تضمن كفاءة التشغيل بنظام <strong>الطاقة الشمسية</strong> الموفر للطاقة.
+                  خلال مراحل التنفيذ، حرصنا على <strong>توريد طلمبات المياه</strong> الأصلية وتجهيز البئر بكافة المستلزمات بنظام <strong>الطاقة الشمسية</strong>.
                 </p>
               </div>
 
-              {/* قسم مشاركة المشروع */}
-              <div className="mt-20 pt-10 border-t border-slate-100">
+              {/* مشاركة المشروع */}
+              <div className="mt-12 md:mt-20 pt-8 md:pt-10 border-t border-slate-100">
                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <span className="font-black text-slate-800 flex items-center gap-2">
-                       <Share2 size={20} className="text-sky-500" /> شارك هذا الإنجاز:
+                    <span className="font-black text-slate-800 text-sm md:text-base flex items-center gap-2">
+                       <Share2 size={18} className="text-sky-500" /> شارك الإنجاز:
                     </span>
-                    <div className="flex gap-4">
-                       <button onClick={() => window.open(`https://facebook.com/sharer/sharer.php?u=${currentUrl}`)} className="p-4 bg-[#1877F2] text-white rounded-2xl hover:scale-110 transition-all shadow-lg shadow-blue-100"><Facebook size={20}/></button>
-                       <button onClick={copyLink} className="p-4 bg-slate-900 text-white rounded-2xl hover:scale-110 transition-all shadow-lg shadow-slate-200"><Copy size={20}/></button>
+                    <div className="flex gap-3 md:gap-4">
+                       <button onClick={() => window.open(`https://facebook.com/sharer/sharer.php?u=${currentUrl}`, '_blank')} className="p-3 md:p-4 bg-[#1877F2] text-white rounded-xl md:rounded-2xl hover:scale-105 transition-all shadow-lg shadow-blue-100" aria-label="Share on Facebook"><Facebook size={20}/></button>
+                       <button onClick={copyLink} className="p-3 md:p-4 bg-slate-900 text-white rounded-xl md:rounded-2xl hover:scale-105 transition-all shadow-lg shadow-slate-200" aria-label="Copy Link"><Copy size={20}/></button>
                     </div>
                  </div>
               </div>
             </article>
 
-            {/* سكشن إضافي لرفع كثافة السيو (Technical Standards) */}
-            <div className="grid sm:grid-cols-3 gap-6">
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-md border border-slate-50 text-center group hover:bg-sky-600 transition-all duration-500">
-                  <Wrench size={32} className="mx-auto mb-4 text-sky-600 group-hover:text-white" />
-                  <h4 className="font-black text-slate-900 group-hover:text-white mb-2">صيانة دورية</h4>
-                  <p className="text-xs text-slate-400 group-hover:text-sky-100 leading-relaxed">نظام متابعة فني بعد التسليم لضمان كفاءة البئر.</p>
-               </div>
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-md border border-slate-50 text-center group hover:bg-emerald-600 transition-all duration-500">
-                  <Sun size={32} className="mx-auto mb-4 text-emerald-600 group-hover:text-white" />
-                  <h4 className="font-black text-slate-900 group-hover:text-white mb-2">طاقة نظيفة</h4>
-                  <p className="text-xs text-slate-400 group-hover:text-emerald-100 leading-relaxed">تصميم محطة طاقة شمسية مخصصة لعمق البئر.</p>
-               </div>
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-md border border-slate-50 text-center group hover:bg-amber-500 transition-all duration-500">
-                  <Droplets size={32} className="mx-auto mb-4 text-amber-500 group-hover:text-white" />
-                  <h4 className="font-black text-slate-900 group-hover:text-white mb-2">تدفق مستدام</h4>
-                  <p className="text-xs text-slate-400 group-hover:text-amber-100 leading-relaxed">تجارب ضخ معتمدة للتأكد من إنتاجية البئر.</p>
-               </div>
+            {/* سكشن المميزات الفنية */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+               {[
+                 { icon: Wrench, color: "text-sky-600", hover: "hover:bg-sky-600", title: "صيانة دورية", desc: "نظام متابعة فني بعد التسليم." },
+                 { icon: Sun, color: "text-emerald-600", hover: "hover:bg-emerald-600", title: "طاقة نظيفة", desc: "محطات طاقة شمسية مخصصة." },
+                 { icon: Droplets, color: "text-amber-500", hover: "hover:bg-amber-500", title: "تدفق مستدام", desc: "تجارب ضخ معتمدة تقنياً." }
+               ].map((item, i) => (
+                 <div key={i} className={`bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-md border border-slate-50 text-center group ${item.hover} transition-all duration-500`}>
+                    <item.icon size={28} className={`mx-auto mb-4 ${item.color} group-hover:text-white transition-colors`} />
+                    <h4 className="font-black text-slate-900 group-hover:text-white mb-2 text-sm md:text-base">{item.title}</h4>
+                    <p className="text-[11px] md:text-xs text-slate-400 group-hover:text-white/80 leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
             </div>
           </div>
 
-          {/* العمود الجانبي: بطاقة المعلومات */}
-          <aside className="lg:col-span-4 space-y-8">
-            <div className="bg-white rounded-[3rem] p-10 shadow-2xl border border-slate-100 sticky top-28 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-50 rounded-bl-[100px] -z-0 opacity-50" />
+          {/* العمود الجانبي */}
+          <aside className="lg:col-span-4 space-y-6 md:space-y-8">
+            <div className="bg-white rounded-2xl md:rounded-[3rem] p-6 md:p-10 shadow-2xl border border-slate-50 lg:sticky lg:top-24 overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-bl-[80px] -z-0 opacity-50" />
               
-              <h3 className="text-2xl font-black text-slate-900 mb-10 border-b border-slate-100 pb-6 flex items-center gap-3 relative z-10">
-                <Bookmark size={24} className="text-sky-600" /> بيانات المشروع
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-8 border-b border-slate-100 pb-5 flex items-center gap-3 relative z-10">
+                <Bookmark size={22} className="text-sky-600" /> بيانات المشروع
               </h3>
               
-              <div className="space-y-10 relative z-10">
+              <div className="space-y-6 md:space-y-10 relative z-10">
                 <InfoRow icon={<User />} label="العميل" value={project.client} />
-                <InfoRow icon={<MapPin />} label="الموقع الجغرافي" value={project.location} />
-                <InfoRow icon={<Calendar />} label="سنة التنفيذ" value={project.year} />
-                <InfoRow icon={<Settings />} label="نوع الخدمة" value="حفر وتوريد متكامل" />
+                <InfoRow icon={<MapPin />} label="الموقع" value={project.location} />
+                <InfoRow icon={<Calendar />} label="السنة" value={project.year} />
+                <InfoRow icon={<Settings />} label="الخدمة" value="حفر وتوريد" />
               </div>
 
-              <div className="mt-12 pt-10 border-t border-slate-100 relative z-10">
-                 <p className="text-slate-400 text-sm font-bold mb-6 text-center leading-relaxed">هل تريد تنفيذ مشروع مماثل في منطقتك؟</p>
+              <div className="mt-10 md:mt-12 pt-8 md:pt-10 border-t border-slate-100 relative z-10 text-center">
+                 <p className="text-slate-400 text-xs md:text-sm font-bold mb-6 leading-relaxed">تريد تنفيذ مشروع مماثل؟</p>
                  <Link 
                   href="/contact" 
-                  className="w-full bg-[#0c2461] hover:bg-emerald-600 text-white py-5 rounded-2xl font-black text-center flex items-center justify-center gap-3 transition-all shadow-xl active:scale-95"
+                  className="w-full bg-[#0c2461] hover:bg-emerald-600 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 transition-all shadow-xl active:scale-95"
                  >
-                   طلب استشارة فنية <ArrowRight size={20} className="rotate-180" />
+                   طلب استشارة <ArrowRight size={18} className="rotate-180" />
                  </Link>
               </div>
             </div>
@@ -215,12 +213,12 @@ export default function ProjectDetailClient({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* قسم الإجراء النهائي */}
-      <div className="mt-32">
+      {/* النهاية */}
+      <div className="mt-20 md:mt-32">
          <StartAction />
       </div>
 
-      <div className="h-20" />
+      <div className="h-10 md:h-20" />
     </main>
   );
 }
@@ -230,13 +228,13 @@ export default function ProjectDetailClient({ project }: { project: Project }) {
  */
 function InfoRow({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
-    <div className="flex items-start gap-5 group">
-      <div className="p-3.5 bg-slate-50 rounded-xl text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-sm">
-        {React.cloneElement(icon as React.ReactElement, { size: 22 })}
+    <div className="flex items-start gap-4 md:gap-5 group">
+      <div className="p-3 bg-slate-50 rounded-xl text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-sm shrink-0">
+        {React.cloneElement(icon as React.ReactElement, { size: 20 })}
       </div>
-      <div>
-        <p className="text-xs text-slate-400 font-bold mb-1 uppercase tracking-tighter">{label}</p>
-        <p className="font-black text-slate-800 text-lg leading-tight">{value}</p>
+      <div className="min-w-0">
+        <p className="text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">{label}</p>
+        <p className="font-black text-slate-800 text-sm md:text-lg leading-tight break-words">{value}</p>
       </div>
     </div>
   );

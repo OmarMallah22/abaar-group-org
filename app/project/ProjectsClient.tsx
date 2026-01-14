@@ -6,17 +6,13 @@ import useSWR from "swr";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MapPin, Calendar, Layers, ArrowUpRight, Database, 
-  ArrowDown, Activity, LayoutGrid, Globe, ShieldCheck,
-  CheckCircle2, Wrench, Sun, Droplets
+  MapPin, Calendar, ArrowUpRight, 
+  ArrowDown, Droplets, Wrench, Sun, ShieldCheck, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import OurClientsSection from "../../components/OurClientsSection";
 import StartAction from "../../components/StartAction";
 
-/**
- * الواجهات البرمجية لضمان استقرار الكود
- */
 interface Project {
   id: number;
   title: string;
@@ -38,189 +34,108 @@ const allProjectsFetcher = async () => {
 };
 
 export default function ProjectsClient({ initialProjects }: { initialProjects: Project[] }) {
-  const { data: projects } = useSWR("all-projects-full-list", allProjectsFetcher, {
+  const { data: projects, isLoading } = useSWR("all-projects-full-list", allProjectsFetcher, {
     fallbackData: initialProjects,
     revalidateOnFocus: false,
   });
 
   const [visibleCount, setVisibleCount] = useState(6);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const clientsSectionRef = useRef<HTMLDivElement>(null);
   const [isClientsVisible, setIsClientsVisible] = useState(false);
 
-  const handleLoadMore = () => setVisibleCount((prev) => prev + 6);
-
-  /**
-   * تأثير WebGL المتطور - Shimmering Fluid Physics
-   * يضيف لمسة تقنية هندسية تليق بشركة حفر آبار
-   */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const gl = canvas.getContext("webgl");
-    if (!gl) return;
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const vertexSource = `attribute vec2 position; void main() { gl_Position = vec4(position, 0.0, 1.0); }`;
-    const fragmentSource = `
-      precision highp float;
-      uniform float width; uniform float height; uniform float time;
-      void main(){
-        vec2 uv = gl_FragCoord.xy / vec2(width, height);
-        float d = sin(uv.x * 12.0 + time) * 0.08 + sin(uv.y * 10.0 + time) * 0.08;
-        vec3 col = vec3(0.01, 0.04, 0.08) + vec3(0.1, 0.25, 0.4) * (uv.y + d);
-        gl_FragColor = vec4(col, 1.0);
-      }`;
-
-    const compile = (src: string, type: number) => {
-      const s = gl.createShader(type)!;
-      gl.shaderSource(s, src); gl.compileShader(s); return s;
-    };
-    const program = gl.createProgram()!;
-    gl.attachShader(program, compile(vertexSource, gl.VERTEX_SHADER));
-    gl.attachShader(program, compile(fragmentSource, gl.FRAGMENT_SHADER));
-    gl.linkProgram(program); gl.useProgram(program);
-
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1,-1,-1,1,1,1,-1]), gl.STATIC_DRAW);
-    const pos = gl.getAttribLocation(program, "position");
-    gl.enableVertexAttribArray(pos);
-    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-
-    let t = 0;
-    const render = () => {
-      t += 0.008;
-      gl.uniform1f(gl.getUniformLocation(program, "time"), t);
-      gl.uniform1f(gl.getUniformLocation(program, "width"), canvas.width);
-      gl.uniform1f(gl.getUniformLocation(program, "height"), canvas.height);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      requestAnimationFrame(render);
-    };
-    render();
-    return () => window.removeEventListener("resize", resize);
-  }, []);
-
+  // مراقب ظهور قسم العملاء لتسريع الصفحة
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setIsClientsVisible(true); observer.disconnect(); }
-    }, { rootMargin: "200px" });
+    }, { rootMargin: "100px" });
     if (clientsSectionRef.current) observer.observe(clientsSectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  /**
-   * بيانات Schema المتقدمة (JSON-LD)
-   * تم توحيد النطاق إلى .org لتعزيز سلطة الموقع
-   */
-  const structuredData = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "سجل مشاريع حفر وصيانة الآبار - أبار جروب",
-    "description": "قائمة بأهم مشاريع حفر الآبار الجوفية ومحطات الطاقة الشمسية التي نفذتها أبار جروب في مصر.",
-    "url": "https://abaargroup.org/project",
-    "itemListElement": projects?.map((p, i) => ({
-      "@type": "ListItem",
-      "position": i + 1,
-      "url": `https://abaargroup.org/project/${p.slug}`,
-      "name": p.title
-    }))
-  }), [projects]);
-
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-right font-arabic select-none" dir="rtl">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-
-      {/* 1. Hero Section - مع خلفية WebGL وتحسين الكلمات المفتاحية */}
-      <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
-          <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-30">
+    <main className="min-h-screen bg-[#fcfcfd] text-right font-arabic overflow-x-hidden" dir="rtl">
+      
+      {/* 1. Hero Section - تحسين الأداء البصري */}
+      <section className="relative h-[45vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950 pt-16 md:pt-20">
+          <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-30 pointer-events-none">
             <source src="/image/project.m4v" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-950/80 via-transparent to-slate-50 z-[1]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-sky-950/80 via-transparent to-[#fcfcfd]/20 z-[1]" />
           
-          <div className="relative z-10 text-center px-4">
+          <div className="relative z-10 text-center px-4 max-w-5xl">
             <motion.span 
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-              className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs font-black rounded-full mb-6 tracking-widest animate-pulse shadow-lg shadow-emerald-500/20"
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              className="inline-block px-4 py-1.5 md:px-6 md:py-2 bg-emerald-500 text-white text-[10px] md:text-sm font-black rounded-full mb-4 md:mb-6 shadow-xl"
             >
-               أعمالنا في حفر وصيانة الآبار
+               سجل إنجازات أبار جروب
             </motion.span>
             <motion.h1 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-7xl font-black text-white drop-shadow-2xl"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="text-2xl md:text-5xl lg:text-7xl font-black text-white drop-shadow-2xl leading-tight"
             >
-              سجل مشاريع <span className="text-emerald-400">أبار جروب</span>
+              مشاريع <span className="text-emerald-400">توريد وحفر</span> الآبار
             </motion.h1>
-            <p className="text-sky-100 text-lg md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
-              نفخر بتنفيذ أضخم مشاريع <strong>حفر الآبار</strong> وأنظمة <strong>الطاقة الشمسية</strong> في مختلف محافظات مصر بأعلى دقة هندسية.
+            <p className="text-sky-50 text-sm md:text-xl lg:text-2xl max-w-3xl mx-auto mt-4 md:mt-6 font-bold opacity-95 leading-relaxed">
+              توثيق ميداني لأضخم مشاريع <strong>حفر الآبار</strong> وأنظمة <strong>الطاقة الشمسية</strong> المنفذة بأعلى دقة هندسية في مصر.
             </p>
           </div>
       </section>
 
-      {/* 2. سجل المشاريع بتصميم Grid احترافي مع Microdata */}
-      <section className="py-24 relative z-20">
-        <div className="container mx-auto px-6">
+      {/* 2. Grid Section - تحسين التجاوب وسرعة الأنيميشن */}
+      <section className="py-12 md:py-24 relative z-20 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto">
           
-          {/* قسم تمهيدي لزيادة كثافة المحتوى (SEO Expansion) */}
-          <div className="max-w-4xl mx-auto text-center mb-20 space-y-6">
-             <h2 className="text-3xl md:text-4xl font-black text-slate-900">خبرة ميدانية في توريد وصيانة الآبار</h2>
-             <div className="w-24 h-1.5 bg-sky-600 mx-auto rounded-full"></div>
-             <p className="text-slate-600 text-lg leading-loose font-medium">
-               على مدار أكثر من عقدين، قمنا بتقديم حلول واقعية ومستدامة في <strong>صيانة وتطهير الآبار</strong>. مشاريعنا تشهد على التزامنا بـ <strong>توريد طلمبات المياه</strong> الأصلية وتصميم محطات <strong>الطاقة الشمسية</strong> التي تخدم كبرى المزارع والمشاريع الصناعية في مصر.
+          <div className="max-w-4xl mx-auto text-center mb-12 md:mb-20">
+             <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-4">سابقة أعمالنا الهندسية</h2>
+             <div className="w-20 h-1 bg-sky-600 mx-auto rounded-full mb-6"></div>
+             <p className="text-slate-600 text-base md:text-lg font-bold leading-relaxed">
+               نلتزم بـ <strong>صيانة وتطهير الآبار</strong> و <strong>توريد طلمبات المياه</strong> الأصلية لخدمة كبرى المزارع في مصر.
              </p>
           </div>
 
-          {/* عرض المشاريع */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Grid المحسن */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {projects?.slice(0, visibleCount).map((project, idx) => (
               <motion.article
                 key={project.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                itemScope itemType="https://schema.org/CreativeWork"
-                className="group bg-white rounded-[3rem] border border-slate-200/60 shadow-sm hover:shadow-2xl transition-all duration-700 overflow-hidden flex flex-col"
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4 }}
+                className="group bg-white rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full"
               >
-                <div className="relative aspect-[4/3] overflow-hidden m-4 rounded-[2.5rem] bg-slate-100">
+                <div className="relative aspect-[4/3] overflow-hidden m-3 md:m-4 rounded-xl md:rounded-[2rem] bg-slate-50">
                   <Image 
                     src={project.image} 
-                    alt={`تنفيذ مشروع ${project.title} - شركة أبار جروب لحفر الآبار`} 
+                    alt={project.title} 
                     fill 
-                    className="object-cover transition-transform duration-1000 group-hover:scale-110" 
-                    itemProp="image"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority={idx < 3}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                  <div className="absolute top-6 left-6 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2">
-                    <Calendar size={14} className="text-sky-600" />
-                    <span className="text-[11px] font-black text-slate-800" itemProp="datePublished">{project.year}</span>
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-2">
+                    <Calendar size={12} className="text-sky-600" />
+                    <span className="text-[10px] font-black text-slate-800">{project.year}</span>
                   </div>
                 </div>
 
-                <div className="p-10 pt-4 flex flex-col flex-grow text-right">
-                  <div className="flex items-center gap-2 text-sky-600 text-[11px] font-black uppercase mb-4 tracking-tighter">
-                    <MapPin size={14} /> <span itemProp="locationCreated">{project.location}</span>
+                <div className="p-6 md:p-8 pt-0 flex flex-col flex-grow">
+                  <div className="flex items-center gap-1.5 text-sky-600 text-[10px] md:text-[11px] font-black uppercase mb-3">
+                    <MapPin size={14} /> <span>{project.location}</span>
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-4 group-hover:text-sky-600 transition-colors line-clamp-1" itemProp="name">
+                  <h3 className="text-lg md:text-2xl font-black text-slate-900 mb-3 group-hover:text-sky-600 transition-colors line-clamp-1">
                     {project.title}
                   </h3>
-                  <p className="text-slate-500 text-sm leading-[1.8] font-bold line-clamp-3 mb-10" itemProp="description">
-                    {project.scope?.replace(/(\#+|\*|\-|\_|\`|\[|\]|\(|\)|\>)/g, "").trim()}
+                  <p className="text-slate-500 text-xs md:text-sm leading-relaxed font-bold line-clamp-2 mb-6">
+                    {project.scope?.replace(/(\#+|\*|\-|\_)/g, "").trim()}
                   </p>
 
                   <div className="mt-auto">
                     <Link 
                       href={`/project/${project.slug}`} 
-                      className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-xs flex items-center justify-center gap-4 transition-all hover:bg-emerald-600 shadow-xl group-hover:shadow-emerald-200"
+                      className="w-full bg-slate-900 text-white py-4 rounded-xl md:rounded-[1.2rem] font-black text-xs flex items-center justify-center gap-3 transition-all hover:bg-emerald-600 active:scale-95 shadow-lg group-hover:shadow-emerald-100"
                     >
-                      استعراض التقرير الهندسي <ArrowUpRight size={18} />
+                      استعراض المشروع <ArrowUpRight size={16} />
                     </Link>
                   </div>
                 </div>
@@ -228,47 +143,44 @@ export default function ProjectsClient({ initialProjects }: { initialProjects: P
             ))}
           </div>
 
-          {/* زر عرض المزيد الذكي */}
+          {/* زر عرض المزيد */}
           {projects && visibleCount < projects.length && (
-            <div className="mt-24 text-center">
+            <div className="mt-16 md:mt-24 text-center">
               <button 
-                onClick={handleLoadMore}
-                className="group relative inline-flex items-center gap-5 px-20 py-7 bg-white border-2 border-slate-200 rounded-[2.5rem] text-slate-900 font-black text-xl hover:border-sky-600 transition-all shadow-2xl hover:shadow-sky-200/50"
+                onClick={() => setVisibleCount(v => v + 6)}
+                className="group inline-flex items-center gap-3 px-8 md:px-16 py-4 md:py-6 bg-white border-2 border-slate-200 rounded-full text-slate-900 font-black text-base md:text-xl hover:border-sky-600 hover:text-sky-600 transition-all shadow-xl hover:shadow-sky-100/50 active:scale-95"
               >
-                <span>استكشاف المزيد من الإنجازات</span>
-                <div className="bg-sky-500 p-2 rounded-full text-white group-hover:translate-y-1 transition-transform">
-                   <ArrowDown size={24} />
-                </div>
+                <span>استكشاف المزيد</span>
+                <ArrowDown size={20} className="group-hover:translate-y-1 transition-transform" />
               </button>
             </div>
           )}
         </div>
       </section>
 
-      {/* 3. منهجية العمل (SEO Boost - حل مشكلة Thin Content) */}
-      <section className="py-24 bg-white border-y border-slate-100">
-         <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-               <div className="relative aspect-video rounded-[4rem] overflow-hidden shadow-2xl border-8 border-slate-50 group">
-                  <Image src="/image/hint.jpeg" alt="فريق عمل أبار جروب أثناء حفر بئر مياه" fill className="object-cover group-hover:scale-105 transition-transform duration-1000" />
-                  <div className="absolute inset-0 bg-sky-950/20" />
+      {/* 3. منهجية العمل - SEO Content */}
+      <section className="py-16 md:py-28 bg-white border-y border-slate-50">
+         <div className="max-w-7xl mx-auto px-4 md:px-6">
+            <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
+               <div className="relative aspect-video rounded-3xl md:rounded-[4rem] overflow-hidden shadow-2xl border-4 md:border-8 border-slate-50">
+                  <Image src="/image/hint.jpeg" alt="حفر آبار مياه" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
                </div>
-               <div className="space-y-8">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight">معايير التنفيذ في <span className="text-sky-600">أبار جروب</span></h2>
-                  <div className="space-y-6">
+               <div className="space-y-6 md:space-y-8 text-right">
+                  <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-slate-900 leading-tight">معايير أبار جروب <span className="text-sky-600">في التنفيذ</span></h2>
+                  <div className="grid gap-4 md:gap-6">
                      {[
-                       { icon: Droplets, title: "تحليل التربة", desc: "نقوم بعمل دراسات جيوفيزيائية دقيقة قبل البدء في حفر الآبار." },
-                       { icon: Wrench, title: "الصيانة الوقائية", desc: "نستخدم كاميرات تصوير تليفزيوني لتحديد أعطال الآبار بدقة 100%." },
-                       { icon: Sun, title: "حلول الطاقة", desc: "نركب أنظمة طاقة شمسية أصلية تضمن تشغيل الطلمبات بأقل تكلفة." },
-                       { icon: ShieldCheck, title: "الضمان الهندسي", desc: "كافة مشاريع توريد مستلزمات الآبار تخضع لضمان فني شامل." }
+                       { icon: Droplets, color: 'text-sky-600', bg: 'bg-sky-50', title: "تحليل التربة", desc: "دراسات جيوفيزيائية دقيقة قبل البدء في حفر الآبار." },
+                       { icon: Wrench, color: 'text-emerald-600', bg: 'bg-emerald-50', title: "صيانة شاملة", desc: "نستخدم كاميرات تصوير تليفزيوني لتحديد أعطال الآبار بدقة." },
+                       { icon: Sun, color: 'text-amber-500', bg: 'bg-amber-50', title: "طاقة شمسية", desc: "تشغيل الطلمبات بأعلى كفاءة وأقل تكلفة تشغيلية." },
+                       { icon: ShieldCheck, color: 'text-blue-600', bg: 'bg-blue-50', title: "الضمان الفني", desc: "كافة المشاريع تخضع لضمان هندسي شامل وحقيقي." }
                      ].map((item, i) => (
-                       <div key={i} className="flex gap-5 p-6 rounded-3xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
-                          <div className="bg-sky-100 p-4 rounded-2xl text-sky-600 h-fit">
-                             <item.icon size={24} />
+                       <div key={i} className="flex gap-4 p-4 md:p-6 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group">
+                          <div className={`${item.bg} ${item.color} p-3 md:p-4 rounded-xl h-fit shadow-sm`}>
+                             <item.icon size={20} />
                           </div>
                           <div>
-                             <h4 className="font-black text-xl text-slate-900 mb-1">{item.title}</h4>
-                             <p className="text-slate-500 font-bold text-sm leading-relaxed">{item.desc}</p>
+                             <h4 className="font-black text-lg md:text-xl text-slate-900 mb-1">{item.title}</h4>
+                             <p className="text-slate-500 font-bold text-xs md:text-sm">{item.desc}</p>
                           </div>
                        </div>
                      ))}
@@ -279,18 +191,16 @@ export default function ProjectsClient({ initialProjects }: { initialProjects: P
       </section>
 
       {/* 4. شركاء النجاح */}
-      <div ref={clientsSectionRef} className="py-24 bg-slate-50/50">
+      <div ref={clientsSectionRef} className="py-16 md:py-24 bg-slate-50/50">
         <div className="max-w-7xl mx-auto px-6">
-           <div className="text-center mb-16">
-              <h3 className="text-2xl md:text-4xl font-black text-slate-800">عملاء نعتز بخدمتهم</h3>
+           <div className="text-center mb-12">
+              <h3 className="text-xl md:text-3xl font-black text-slate-800">عملاء نعتز بخدمتهم</h3>
            </div>
-           {isClientsVisible && <OurClientsSection />}
+           {isClientsVisible ? <OurClientsSection /> : <div className="h-40 flex items-center justify-center"><Loader2 className="animate-spin text-sky-400" /></div>}
         </div>
       </div>
 
       <StartAction />
-      
-      <div className="h-20 bg-white"></div>
     </main>
   );
 }
