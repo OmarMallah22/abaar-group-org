@@ -16,6 +16,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import StartAction from '@/components/StartAction';
+const useOnScreen = (ref: React.RefObject<HTMLDivElement>, rootMargin = '0px') => {
+    const [isVisible, setIsVisible] = useState(false);
+    useEffect(() => {
+        const observer = new IntersectionObserver(([entry]: IntersectionObserverEntry[]) => {
+            if (entry.isIntersecting) {
+                setIsVisible(true);
+                observer.unobserve(entry.target);
+            }
+        }, { rootMargin });
+        const currentElement = ref.current;
+        if (currentElement) { observer.observe(currentElement); }
+        return () => { if(currentElement) { observer.unobserve(currentElement); } };
+    }, [ref, rootMargin]);
+    return isVisible;
+};
 
 // --- تعريف الأنواع ---
 interface AboutClientProps {
@@ -50,7 +65,9 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
         'كابلات طلمبات أعماق تتحمل الخدمة الشاقة',
         'تجارب الضخ المعتمدة لتقييم البئر'
     ];
-
+     const teamSectionRef = useRef<HTMLDivElement>(null);
+    const isTeamSectionVisible = useOnScreen(teamSectionRef, '200px');
+    
     useEffect(() => {
         setIsMounted(true);
         const fetchData = async () => {
@@ -203,30 +220,32 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
             />
 
             {/* --- Hero Section (تم حل مشكلة التداخل مع الهيدر) --- */}
-            <section className="relative min-h-[55vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950 pt-16 md:pt-0">
-                <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
-                    <source src="/image/project.m4v" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
-                
-                <div className="relative z-10 text-center px-4 max-w-5xl">
-                    <motion.span 
-                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                        className="inline-block px-6 py-2 mt-10 bg-emerald-500 text-white text-xs md:text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
-                    >
-                        خبراء حفر وصيانة الآبار
-                    </motion.span>
-                    <motion.h1 
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                        className="text-2xl sm:text-4xl md:text-7xl font-black text-white drop-shadow-2xl leading-tight"
-                    >
-                        أبار جروب | ريادة في <span className="text-emerald-400">حفر وتوريد</span> الآبار
-                    </motion.h1>
-                    <p className="text-sky-100 text-base md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
-                        نحن ملتزمون بـ <strong>توريد طلمبات المياه</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة منذ عام 1999.
-                    </p>
-                </div>
-            </section>
+           <section className="relative min-h-[60vh] md:min-h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950 pt-20 md:pt-32 lg:pt-20">
+    <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
+        <source src="/image/project.m4v" type="video/mp4" />
+    </video>
+    <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
+    
+    <div className="relative z-10 text-center px-4 max-w-5xl">
+        <motion.span 
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs md:text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
+        >
+            خبراء حفر وصيانة الآبار
+        </motion.span>
+        
+        <motion.h1 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="text-3xl sm:text-4xl md:text-7xl font-black text-white drop-shadow-2xl leading-tight"
+        >
+            أبار جروب | ريادة في <span className="text-emerald-400">حفر وتوريد</span> مستلزمات الابار
+        </motion.h1>
+        
+        <p className="text-sky-100 text-base md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
+            نحن ملتزمون بـ <strong>توريد طلمبات المياه</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة منذ عام 1999.
+        </p>
+    </div>
+</section>
 
             {/* --- About Content --- */}
             <section className="py-16 md:py-28 bg-white">
@@ -234,7 +253,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div className="text-right order-2 lg:order-1">
                             <h2 className="text-2xl md:text-5xl font-black text-blue-900 mb-8 leading-tight">
-                                ريادة مصرية في حفر وصيانة الآبار وتوريد معداتها
+                                ريادة مصرية في حفر وصيانة الآبار وتوريد ملستلزمات الابار.
                             </h2>
                             <p className="text-lg md:text-xl text-slate-600 leading-loose mb-10">
                                 آبار جروب هي شريكك الموثوق في <strong>صيانة وتطهير آبار المياه</strong> الجوفية. نحن نمتلك الخبرة الفنية والمعدات الحديثة لضمان <strong>توريد كافة مستلزمات الآبار</strong> وحلول الطاقة المتجددة.
@@ -262,46 +281,48 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
             </section>
 
             {/* --- Leadership Team Section (تم حل مشكلة تداخل الكروت) --- */}
-            <section className="py-16 md:py-24 bg-[#f8fafc] relative overflow-hidden border-y border-slate-100">
-                <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                    <div className="text-center mb-12 md:mb-16">
-                        <h2 className="text-2xl md:text-5xl font-black text-blue-900 mb-4">
-                            خبراء أبار جروب في هندسة المياه والطاقة
-                        </h2>
-                        <div className="w-24 h-1.5 bg-gradient-to-r from-blue-600 to-emerald-500 mx-auto rounded-full"></div>
-                    </div>
-
-                    {isTeamLoading ? (
-                        <div className="flex flex-col items-center py-20 gap-4">
-                            <div className="w-12 h-12 border-4 border-slate-200 border-t-emerald-500 rounded-full animate-spin"></div>
-                            <p className="text-slate-400 font-bold animate-pulse">جاري جلب بيانات القادة...</p>
+            <section ref={teamSectionRef} className="py-24 bg-white">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-arabic font-bold text-slate-800 mb-6">
+                {('فريق ابار حروب')}
+            </h2>
+        </div>
+        <div className="relative px-8">
+            {isTeamLoading ? (
+                <div className="text-center text-slate-500">{('loading_content')}</div>
+            ) : (
+                /* تم إضافة dots={false} هنا لإخفاء النقاط */
+                <Slider {...leadershipSettings} dots={false}>
+                    {teamMembers.map((member) => (
+                        <div key={member.id} className="px-4">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 text-center border border-slate-200/80 transition-all duration-300 hover:shadow-xl hover:border-sky-300">
+                                <div className="flex justify-center mb-4">
+                                    <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center overflow-hidden">
+                                        {member.image_url ? (
+                                            /* تم استبدال img بـ Image لتحسين الأداء وحل خطأ ESLint */
+                                            <Image 
+                                                src={member.image_url} 
+                                                alt={member.name} 
+                                                width={96} 
+                                                height={96} 
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <Users className="w-10 h-10 text-slate-500" />
+                                        )}
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-arabic font-bold text-slate-800 mb-1">{member.name}</h3>
+                                <p className="text-sky-600 font-arabic font-semibold">{(member.position_key)}</p>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="px-2 md:px-10 team-slider-wrapper">
-                            {isMounted && (
-                                <Slider {...leadershipSettings}>
-                                    {teamMembers.map((member) => (
-                                        <div key={member.id} className="px-2 md:px-4 py-8 outline-none">
-                                            <div className="group relative bg-white rounded-[2rem] p-6 md:p-12 text-center shadow-lg border border-slate-100 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col items-center justify-center min-h-[280px]">
-                                                <div className="absolute top-0 right-0 w-full h-1.5 bg-gradient-to-l from-blue-600 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                <div className="w-16 h-16 md:w-24 md:h-24 bg-sky-50 rounded-full mb-6 flex items-center justify-center text-sky-600">
-                                                    <User size={40} className="md:w-16 md:h-16" />
-                                                </div>
-                                                <div className="relative z-10">
-                                                    <h3 className="text-lg md:text-2xl font-black text-blue-900 mb-3 group-hover:text-emerald-600 transition-colors line-clamp-1">{member.name}</h3>
-                                                    <p className="text-emerald-600 text-xs md:text-sm font-bold bg-emerald-50 px-4 py-1.5 rounded-xl border border-emerald-100/50">
-                                                        {member.position_key || 'خبير فني متخصص'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </Slider>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </section>
+                    ))}
+                </Slider>
+            )}
+        </div>
+    </div>
+</section>
 
             {/* --- Statistics Section --- */}
             <section className="py-20 bg-emerald-600 relative overflow-hidden">
