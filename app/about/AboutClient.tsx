@@ -2,20 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import Slider from "react-slick";
 import { 
-    Award, Target, User, Sun, CheckCircle, 
-    Users, ArrowLeft, Zap, ShieldCheck,
-    Wrench, Truck, Droplets
+    Award, Target, Sun, CheckCircle, 
+    Users, Droplets
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-// تنسيقات السلايدر
+// تنسيقات السلايدر الأساسية
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import StartAction from '@/components/StartAction';
+
+/**
+ * Hook مخصص لمراقبة ظهور العناصر على الشاشة (Lazy Loading/Animations)
+ */
 const useOnScreen = (ref: React.RefObject<HTMLDivElement>, rootMargin = '0px') => {
     const [isVisible, setIsVisible] = useState(false);
     useEffect(() => {
@@ -47,10 +48,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
     const [teamMembers, setTeamMembers] = useState<any[]>(initialTeam);
     const [isTeamLoading, setIsTeamLoading] = useState(initialTeam.length === 0);
     const [statsData, setStatsData] = useState(initialStats);
-    const [isMounted, setIsMounted] = useState(false); // لحل مشاكل السلايدر في أول رندر
+    const [isMounted, setIsMounted] = useState(false); 
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
-
+    
     const allServices = [
         'حفر آبار المياه وتطهيرها الشامل',
         'صيانة آبار المياه الجوفية وتطويرها',
@@ -104,6 +105,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
         fetchData();
     }, [initialTeam]);
 
+    // تأثير الخلفية التكنولوجي (WebGL) المتوافق مع Next.js
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -123,17 +125,10 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
         const fragmentSource = `
             precision highp float;
             uniform float width; uniform float height; uniform float time;
-            vec2 resolution = vec2(width, height);
-            float glow(vec2 p, float r, float i, float s, float a, float f){
-                float d = abs(p.y + a * sin(s * time + p.x * f));
-                d = r / d; return pow(d, i);
-            }
             void main(){
-                vec2 uv = gl_FragCoord.xy / resolution;
-                vec2 p = vec2(0.5) - uv; p.y *= resolution.y / resolution.x;
-                vec3 col = vec3(0.0);
-                col += glow(p, 0.02, 1.5, 2.0, 0.02, 4.0) * vec3(0.1, 0.8, 0.5);
-                col = 1.0 - exp(-col); gl_FragColor = vec4(col, 1.0);
+                vec2 uv = gl_FragCoord.xy / vec2(width, height);
+                float d = abs(uv.y - 0.5 + 0.1 * sin(uv.x * 5.0 + time));
+                gl_FragColor = vec4(vec3(0.1, 0.6, 0.4) * (0.01 / d), 1.0);
             }
         `;
 
@@ -157,12 +152,11 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
             const pos = gl.getAttribLocation(program, "position");
             gl.enableVertexAttribArray(pos);
             gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-            const timeH = gl.getUniformLocation(program, "time");
-            const wH = gl.getUniformLocation(program, "width");
-            const hH = gl.getUniformLocation(program, "height");
             const render = () => {
-                time += 0.01; gl.uniform1f(timeH, time);
-                gl.uniform1f(wH, canvas.width); gl.uniform1f(hH, canvas.height);
+                time += 0.02; 
+                gl.uniform1f(gl.getUniformLocation(program, "time"), time);
+                gl.uniform1f(gl.getUniformLocation(program, "width"), canvas.width);
+                gl.uniform1f(gl.getUniformLocation(program, "height"), canvas.height);
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
                 requestAnimationFrame(render);
             };
@@ -171,35 +165,35 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
         return () => window.removeEventListener("resize", resize);
     }, []);
 
-    // إعدادات السلايدر المحسنة لمنع التداخل في الجوال
-   const leadershipSettings = {
-  dots: false, // إخفاء النقاط نهائياً
-  infinite: true,
-  speed: 500,
-  slidesToShow: 3, // الافتراضي للشاشات الكبيرة
-  slidesToScroll: 1,
-  autoplay: true,
-  rtl: true, // لأن الموقع باللغة العربية
-  arrows: false,
-  responsive: [
-    {
-      breakpoint: 1024, // شاشات التابلت والعرض المتوسط
-      settings: {
-        slidesToShow: 2,
+    // إعدادات السلايدر - حل نهائي لمشكلة انضغاط الكروت في الموبايل
+    const leadershipSettings = {
+        dots: false, // إزالة النقاط نهائياً كما طلبت
+        infinite: teamMembers.length > 1,
+        speed: 500,
+        slidesToShow: 3, 
         slidesToScroll: 1,
-      }
-    },
-    {
-      breakpoint: 640, // شاشات الموبايل
-      settings: {
-        slidesToShow: 1, // كارت واحد فقط ليظهر بشكل مريح
-        slidesToScroll: 1,
-        centerMode: true, // يعطي طابعاً عصرياً برؤية أطراف الكروت المجاورة
-        centerPadding: '20px',
-      }
-    }
-  ]
-};
+        autoplay: true,
+        rtl: true, 
+        arrows: false,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 640,
+                settings: {
+                    slidesToShow: 1, // كارت واحد عريض يمنع الانضغاط
+                    slidesToScroll: 1,
+                    centerMode: true,
+                    centerPadding: '20px',
+                }
+            }
+        ]
+    };
 
     return (
         <div className="bg-white min-h-screen font-arabic overflow-x-hidden" dir="rtl">
@@ -219,33 +213,33 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                 }}
             />
 
-            {/* --- Hero Section (تم حل مشكلة التداخل مع الهيدر) --- */}
-           <section className="relative min-h-[60vh] md:min-h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950 pt-20 md:pt-32 lg:pt-20">
-    <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
-        <source src="/image/project.m4v" type="video/mp4" />
-    </video>
-    <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
-    
-    <div className="relative z-10 text-center px-4 max-w-5xl">
-        <motion.span 
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs md:text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
-        >
-            خبراء حفر وصيانة الآبار
-        </motion.span>
-        
-        <motion.h1 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-2xl sm:text-3xl md:text-6xl font-black text-white drop-shadow-2xl leading-tight"
-        >
-            أبار جروب | ريادة في <span className="text-emerald-400">حفر وتوريد</span> مستلزمات الابار
-        </motion.h1>
-        
-        <p className="text-sky-100 text-base md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed">
-            نحن ملتزمون بـ <strong>توريد طلمبات المياه</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة منذ عام 1999.
-        </p>
-    </div>
-</section>
+            {/* --- Hero Section (تم حل التداخل مع الهيدر بزيادة pt) --- */}
+            <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden bg-sky-950 pt-32 md:pt-40">
+                <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
+                    <source src="/image/project.m4v" type="video/mp4" />
+                </video>
+                <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-white/10 z-[1]" />
+                
+                <div className="relative z-10 text-center px-4 max-w-5xl">
+                    <motion.span 
+                        initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                        className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs md:text-sm font-black rounded-full mb-6 tracking-widest animate-pulse"
+                    >
+                        خبراء حفر وصيانة الآبار
+                    </motion.span>
+                    
+                    <motion.h1 
+                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                        className="text-2xl sm:text-4xl md:text-6xl font-black text-white drop-shadow-2xl leading-tight"
+                    >
+                        أبار جروب | ريادة في <span className="text-emerald-400">حفر وتوريد</span> مستلزمات الآبار
+                    </motion.h1>
+                    
+                    <p className="text-sky-100 text-base md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-95 leading-relaxed">
+                        نحن ملتزمون بـ <strong>توريد طلمبات المياه</strong> وتصميم محطات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة منذ عام 1999.
+                    </p>
+                </div>
+            </section>
 
             {/* --- About Content --- */}
             <section className="py-16 md:py-28 bg-white">
@@ -253,7 +247,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div className="text-right order-2 lg:order-1">
                             <h2 className="text-2xl md:text-5xl font-black text-blue-900 mb-8 leading-tight">
-                                ريادة مصرية في حفر وصيانة الآبار وتوريد ملستلزمات الابار.
+                                ريادة مصرية في حفر وصيانة الآبار وتوريد مستلزمات الآبار.
                             </h2>
                             <p className="text-lg md:text-xl text-slate-600 leading-loose mb-10">
                                 آبار جروب هي شريكك الموثوق في <strong>صيانة وتطهير آبار المياه</strong> الجوفية. نحن نمتلك الخبرة الفنية والمعدات الحديثة لضمان <strong>توريد كافة مستلزمات الآبار</strong> وحلول الطاقة المتجددة.
@@ -280,11 +274,11 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                 </div>
             </section>
 
-          
+            
 
             {/* --- Statistics Section --- */}
             <section className="py-20 bg-emerald-600 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full"></div>
+                <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center relative z-10">
                     {[
                         { icon: Award, num: statsData.years, label: "سنة خبرة" },
@@ -293,9 +287,9 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
                         { icon: Sun, num: statsData.solar, label: "محطة طاقة" },
                     ].map((stat, i) => (
                         <div key={i} className="group">
-                            <stat.icon className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-4 opacity-80 group-hover:scale-110 transition-transform" />
-                            <div className="text-3xl md:text-5xl font-black mb-1">{stat.num}</div>
-                            <div className="font-bold opacity-90 text-[10px] md:text-base">{stat.label}</div>
+                            <stat.icon className="w-8 h-8 md:w-12 md:h-12 mx-auto mb-4 opacity-80 group-hover:scale-110 transition-transform" />
+                            <div className="text-3xl md:text-6xl font-black mb-1">{stat.num}</div>
+                            <div className="font-bold opacity-90 text-[10px] md:text-base uppercase tracking-wider">{stat.label}</div>
                         </div>
                     ))}
                 </div>
@@ -305,7 +299,7 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
             <section className="py-20 bg-white">
                 <div className="container mx-auto px-6 text-center max-w-4xl">
                     <Droplets className="w-12 h-12 text-sky-500 mx-auto mb-6" />
-                    <h2 className="text-2xl md:text-3xl font-black mb-8 text-blue-900 leading-tight">نحن نؤمن بأهمية كل قطرة مياه</h2>
+                    <h2 className="text-2xl md:text-3xl font-black mb-8 text-blue-900 leading-tight">نحو مستقبل مائي مستدام</h2>
                     <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium">
                         عملية <strong>حفر الآبار</strong> تتطلب دقة هندسية، ونحن نستخدم تقنيات التصوير التليفزيوني لفحص البئر قبل وبعد الصيانة. التزامنا بـ <strong>توريد طلمبات أصلية</strong> يضمن لعملائنا استدامة مائية بأقل التكاليف.
                     </p>
@@ -313,20 +307,6 @@ const AboutClient: React.FC<AboutClientProps> = ({ initialTeam, initialStats }) 
             </section>
 
             <StartAction />
-
-            {/* تحسينات CSS مخصصة للسلايدر لمنع أي تداخل خارجي */}
-            <style jsx global>{`
-                .team-slider-wrapper .slick-list {
-                    margin: 0 -10px;
-                }
-                .team-slider-wrapper .slick-dots li button:before {
-                    color: #10b981;
-                    font-size: 12px;
-                }
-                .team-slider-wrapper .slick-dots li.slick-active button:before {
-                    color: #0c2461;
-                }
-            `}</style>
         </div>
     );
 };
