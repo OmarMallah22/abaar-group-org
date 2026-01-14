@@ -112,6 +112,7 @@ export default function HomePage() {
   ];
 
   // 3. إعدادات السلايدر لشركاء النجاح
+// إعدادات السلايدر المعدلة لعرض 3 صور في الشاشات الصغيرة
 const sliderSettings = {
   dots: false,
   infinite: true,
@@ -120,16 +121,17 @@ const sliderSettings = {
   slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 3000,
+  rtl: true, // تفعيل الاتجاه من اليمين لليسار ليتوافق مع لغة الموقع
   arrows: false,
   responsive: [
     {
-      breakpoint: 1280, // الشاشات الكبيرة
+      breakpoint: 1280,
       settings: {
         slidesToShow: 5,
       }
     },
     {
-      breakpoint: 1024, // أجهزة التابلت العريضة
+      breakpoint: 1024,
       settings: {
         slidesToShow: 4,
       }
@@ -143,7 +145,9 @@ const sliderSettings = {
     {
       breakpoint: 480, // الموبايل الصغير
       settings: {
-        slidesToShow: 2, // عرض شعارين فقط ليكونوا واضحين
+        slidesToShow: 3, // تم تعديلها من 2 إلى 3 صور لزيادة الوضوح كما طلبت
+        centerMode: true, // اختياري: لجعل الصور تتوسط الشاشة بشكل أجمل
+        centerPadding: '10px',
       }
     }
   ]
@@ -412,7 +416,7 @@ const sliderSettings = {
           5. سكشن شركاء النجاح (Success Partners Slider)
           =================================================================================== 
       */}
-      <section ref={clientsRef} className="py-12 md:py-24 bg-[#fcfcfd] overflow-hidden border-t border-slate-100">
+     <section ref={clientsRef} className="py-12 md:py-24 bg-[#fcfcfd] overflow-hidden border-t border-slate-100">
   <div className="container mx-auto px-4">
     {/* الهيدر: تحسين الخطوط والهوامش */}
     <div className="text-center mb-12 md:mb-16">
@@ -435,15 +439,15 @@ const sliderSettings = {
         <div className="success-partners-wrapper">
           <Slider {...sliderSettings}>
             {clients.map((client) => (
-              <div key={client.id} className="px-2 md:px-3 outline-none group cursor-pointer">
-                {/* تعديل الكارد: h-24 على الموبايل و h-32 على الشاشات الكبيرة */}
-                <div className="relative h-20 sm:h-24 md:h-32 w-full rounded-xl md:rounded-2xl p-3 md:p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md bg-white flex items-center justify-center overflow-hidden">
+              <div key={client.id} className="px-1.5 md:px-3 outline-none group cursor-pointer">
+                {/* تعديل الكارد: h-20 على الموبايل لتناسب عرض 3 صور بشكل متناسق */}
+                <div className="relative h-20 md:h-32 w-full rounded-xl md:rounded-2xl p-2 md:p-6 border border-slate-100 transition-all duration-300 shadow-sm hover:shadow-md bg-white flex items-center justify-center overflow-hidden">
                   <Image
                     src={client.logo_url}
                     alt={`لوجو شريك نجاح شركة أبار جروب - ${client.id}`}
                     fill
                     className="object-contain p-2 md:p-4 grayscale-0 md:grayscale opacity-100 md:opacity-60 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 15vw"
+                    sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 15vw"
                   />
                 </div>
               </div>
@@ -458,6 +462,8 @@ const sliderSettings = {
     </div>
   </div>
 </section>
+
+
 
       {/* ===================================================================================
           سكشن (جديد) - لزيادة كمية الكلمات وتحسين الـ SEO في نهاية الصفحة
