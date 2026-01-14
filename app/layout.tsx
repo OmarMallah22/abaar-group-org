@@ -1,9 +1,8 @@
-// app/layout.tsx
 import './globals.css';
 import type { Metadata } from 'next';
 import { Suspense } from 'react'; 
 import { Noto_Naskh_Arabic } from 'next/font/google';
-import Script from 'next/script'; // استيراد مكون Script من Next.js
+import Script from 'next/script';
 import Header from '@/components/header'; 
 import Footer from '@/components/footer'; 
 import { CartProvider } from '@/app/context/CartContext';
@@ -16,19 +15,12 @@ const notoNaskh = Noto_Naskh_Arabic({
 });
 
 export const metadata: Metadata = {
-  // العنوان الآن بطول 55 حرفاً (مثالي للسيو)
   title: 'أبار جروب | حفر وصيانة الآبار وحلول الطاقة الشمسية بمصر',
   description: 'شركة أبار جروب الرائدة في حفر وصيانة آبار المياه، توريد وتركيب طلمبات الأعماق الغاطسة، وتصميم أنظمة الطاقة الشمسية المبتكرة في مصر بأعلى جودة وأفضل الأسعار.',
   keywords: 'حفر آبار مياه، صيانة آبار، توريد طلمبات مياه، طاقة شمسية مصر، أبار جروب، حفر وتوريد',
-
-  icons: {
-    icon: [
-      { url: '/image/f.png', sizes: '32x32' },
-      { url: '/image/icon.png', sizes: '192x192' },
-    ],
-    shortcut: '/image/favicon.ico',
-    apple: '/image/apple-icon.png',
-  },
+  
+  // ملاحظة: تم حذف قسم icons هنا لأنك وضعت الملفات في مجلد app بالأسماء الصحيحة
+  // Next.js سيقوم بتوليد الروابط تلقائياً وبأفضل جودة للسيو.
 
   alternates: {
     canonical: 'https://abaargroup.org',
@@ -60,7 +52,6 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <head>
-        {/* 1. حقن كود Google Tag Manager في الـ <head> */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -71,7 +62,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* البيانات المهيكلة (Schema) */}
+        {/* Schema Markup - تم تعديل رابط اللوجو للمسار الجديد */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -80,7 +71,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "أبار جروب",
               "url": "https://abaargroup.org",
-              "logo": "https://abaargroup.org/image/icon.png",
+              "logo": "https://abaargroup.org/icon.png", 
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+201211110240",
@@ -91,7 +82,6 @@ export default function RootLayout({
         />
       </head>
       <body className={`${notoNaskh.className} bg-background text-foreground min-h-screen flex flex-col`}>
-        {/* 2. حقن كود Noscript مباشرة بعد فتح الـ <body> */}
         <noscript>
           <iframe 
             src="https://www.googletagmanager.com/ns.html?id=GTM-5HVLKFRT"
@@ -104,11 +94,7 @@ export default function RootLayout({
         <CartProvider>
           <Header />
           <main className="flex-grow">
-            <Suspense fallback={
-              <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-sky-600"></div>
-              </div>
-            }>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">...Loading</div>}>
               {children}
             </Suspense>
           </main>
