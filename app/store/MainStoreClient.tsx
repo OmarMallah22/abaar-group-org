@@ -1,4 +1,3 @@
-// app/store/MainStoreClient.tsx
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -7,7 +6,7 @@ import Image from "next/image";
 import { supabase } from '@/lib/supabase';
 import { 
   ArrowRight, ShoppingBag, Zap, ShieldCheck, 
-  Truck, Settings, Wrench, Droplets 
+  Truck, Settings, Wrench, Droplets, Clock 
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,20 +28,23 @@ export default function MainStoreClient({ initialCategories }: MainStoreClientPr
 
   useEffect(() => {
     const getCats = async () => {
-      const { data } = await supabase.from('categories_du').select('*').order('name', { ascending: true });
+      const { data } = await supabase
+        .from('categories_du')
+        .select('*')
+        .order('name', { ascending: true });
       if (data) setCategories(data);
     };
     if (initialCategories.length === 0) getCats();
   }, [initialCategories]);
 
-  // إضافة بيانات Schema للمتجر (مهمة جداً لجوجل)
+  // Schema.org لمساعدة محركات البحث
   const storeSchema = useMemo(() => ({
     "@context": "https://schema.org",
     "@type": "Store",
     "name": "متجر أبار جروب",
     "description": "المورد الأول لمستلزمات حفر وصيانة الآبار وطلمبات الأعماق وأنظمة الطاقة الشمسية في مصر.",
     "url": "https://abaargroup.org/store",
-    "image": "https://abaargroup.org/image/about.jpeg",
+    "image": "https://abaargroup.org/image/hint.jpeg",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Cairo",
@@ -51,180 +53,158 @@ export default function MainStoreClient({ initialCategories }: MainStoreClientPr
   }), []);
 
   return (
-    <main className="bg-slate-50 min-h-screen font-arabic" dir="rtl">
-      {/* حقن بيانات Schema برمجياً */}
+    <main className="bg-slate-50 min-h-screen font-arabic overflow-x-hidden" dir="rtl">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(storeSchema) }} />
       
-      {/* --- 1. Hero Section (SEO Optimized) --- */}
-      <section className="relative h-[55vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
-        <video autoPlay muted loop playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-50">
+      {/* --- 1. Hero Section (تحسين التجاوب والأداء) --- */}
+      <section className="relative h-[50vh] md:h-[65vh] flex items-center justify-center overflow-hidden bg-sky-950">
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="absolute inset-0 z-0 w-full h-full object-cover opacity-40 pointer-events-none"
+        >
           <source src="/image/project.m4v" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-slate-50 z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-900/40 via-transparent to-slate-50/10 z-[1]" />
         
-        <div className="relative z-10 text-center px-4">
+        <div className="relative z-10 text-center px-4 max-w-5xl">
           <motion.span 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-block px-6 py-2 bg-emerald-500 text-white text-xs font-black rounded-full mb-6 tracking-widest animate-pulse"
+            initial={{ opacity: 0, y: -10 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-block px-4 py-1.5 bg-emerald-500 text-white text-[10px] md:text-xs font-black rounded-full mb-4 md:mb-6 tracking-widest shadow-lg"
           >
-             توريد وتجهيز آبار المياه
+             أبار جروب: الريادة في حلول المياه
           </motion.span>
           
-          {/* تحديث H1 ليكون غنياً بالكلمات المفتاحية المطلوبة */}
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-7xl lg:text-8xl font-black text-white drop-shadow-2xl mb-6"
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="text-3xl md:text-6xl lg:text-8xl font-black text-white drop-shadow-2xl mb-4 md:mb-6 leading-[1.1]"
           >
-            متجر <span className="text-emerald-400">توريد </span> 
+            متجر <span className="text-emerald-400">توريد </span> مستلزمات الآبار
           </motion.h1>
           
-          <p className="text-sky-100 text-lg md:text-2xl max-w-3xl mx-auto mt-6 font-medium opacity-90 leading-relaxed drop-shadow-md">
-            نحن خبراؤك في <strong>توريد طلمبات المياه</strong>، ومواسير الآبار، وكافة مستلزمات <strong>الطاقة الشمسية</strong> بأعلى جودة وأفضل الأسعار في مصر.
+          <p className="text-sky-50 text-sm md:text-xl lg:text-2xl max-w-3xl mx-auto mt-2 font-bold opacity-95 leading-relaxed drop-shadow-md">
+            نؤمن لك <strong>طلمبات المياه</strong> وكافة معدات <strong>الطاقة الشمسية</strong> بأعلى معايير الجودة في السوق المصري.
           </p>
         </div>
       </section>
 
-      {/* --- 2. Categories Grid (شبكة الأقسام) --- */}
-      <div className="max-w-7xl mx-auto px-6 py-28 relative z-20">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16 border-b border-slate-200 pb-10">
-            <div className="flex items-center gap-4">
-                <div className="p-4 bg-sky-100 rounded-2xl text-sky-600 shadow-inner">
-                    <ShoppingBag size={32} />
-                </div>
-                <div>
-                    <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">أقسام توريد مستلزمات الآبار</h2>
-                    <p className="text-slate-500 font-bold">كل ما تحتاجه لتجهيز وصيانة بئرك في مكان واحد</p>
-                </div>
-            </div>
-            <div className="hidden lg:block text-left">
-                <span className="text-sm font-black text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-                  تحديثات الأسعار: يناير 2026
-                </span>
-            </div>
-        </div>
+      {/* --- 2. Categories Grid --- */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-24 relative z-20">
+        
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
           {categories_du.map((cat, index) => (
             <motion.div
                 key={cat.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4 }} // إلغاء الـ delay التراكمي لسرعة الاستجابة
             >
                 <Link 
                     href={`/store/${cat.id}`} 
-                    className="group relative aspect-[3/4] flex items-end rounded-[3.5rem] overflow-hidden shadow-2xl transition-all hover:-translate-y-3 bg-slate-200 border-4 border-white"
+                    className="group relative aspect-[4/5] sm:aspect-[3/4] flex items-end rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 bg-slate-200 border-2 md:border-4 border-white"
                 >
                     <Image 
                         src={cat.image || '/placeholder.jpg'} 
-                        alt={`قسم ${cat.name} - أبار جروب لتوريد مستلزمات الآبار`} 
+                        alt={cat.name} 
                         fill 
-                        className="object-cover transition-transform duration-1000 group-hover:scale-110" 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110" 
                     />
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-80 group-hover:opacity-95 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity"></div>
                     
-                    <div className="relative z-10 p-10 w-full">
-                        <div className="flex items-center gap-2 text-emerald-400 mb-3 opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
-                            <Zap size={18} fill="currentColor" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">مواصفات قياسية</span>
+                    <div className="relative z-10 p-6 md:p-10 w-full">
+                        <div className="flex items-center gap-2 text-emerald-400 mb-2 md:mb-3 transform translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
+                            <Zap size={16} fill="currentColor" />
+                            <span className="text-[9px] font-black uppercase tracking-tighter">جودة معتمدة</span>
                         </div>
-                        <h3 className="text-3xl font-black text-white mb-4 leading-tight">{cat.name}</h3>
-                        <div className="flex items-center gap-3 text-sky-400 font-black text-sm group-hover:gap-6 transition-all">
-                            <span>استعراض المنتجات</span> 
-                            <ArrowRight size={22} className="transition-transform" />
+                        <h3 className="text-2xl md:text-3xl font-black text-white mb-3 md:mb-4 leading-tight">{cat.name}</h3>
+                        <div className="flex items-center gap-2 text-sky-400 font-black text-xs md:text-sm">
+                            <span>استعراض القسم</span> 
+                            <ArrowRight size={18} className="group-hover:translate-x-[-8px] transition-transform" />
                         </div>
                     </div>
 
-                    <span className="absolute top-10 left-10 text-white/10 text-9xl font-black select-none pointer-events-none group-hover:text-white/20 transition-colors">
-                        {index + 1}
+                    <span className="absolute top-6 left-6 text-white/5 text-6xl md:text-8xl font-black select-none pointer-events-none group-hover:text-white/10 transition-colors">
+                        0{index + 1}
                     </span>
                 </Link>
             </motion.div>
           ))}
         </div>
 
-        {/* --- 3. قسم معلومات إضافي (حل مشكلة Thin Content) --- */}
-        <section className="mt-40 bg-white rounded-[4rem] p-10 lg:p-24 shadow-xl border border-slate-100 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-sky-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-            <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10">
-                <div>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight text-right">
-                        متخصصون في توريد معدات <br /> 
-                        <span className="text-emerald-600">حفر وصيانة الآبار</span>
+        {/* --- 3. قسم معلومات SEO --- */}
+        <section className="mt-20 md:mt-40 bg-white rounded-[2rem] md:rounded-[4rem] p-6 md:p-12 lg:p-20 shadow-xl border border-slate-100 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-sky-50 rounded-full blur-[80px] -mr-24 -mt-24"></div>
+            <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center relative z-10">
+                <div className="text-right">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 md:mb-8 leading-tight">
+                        خبراء <span className="text-emerald-600">توريد مستلزمات الآبار</span> <br className="hidden md:block" /> في السوق المصري
                     </h2>
-                    <p className="text-xl text-slate-600 leading-[2.2] mb-10 text-right">
-                        نحن في <strong>أبار جروب</strong> لا نكتفي ببيع المنتجات، بل نوفر لك القطع الأصلية التي تضمن استمرارية عمل بئرك بكفاءة. متجرنا يضم أجود أنواع <strong>طلمبات الأعماق</strong>، ومواسير الحديد والسيملس، بالإضافة إلى كابلات طلمبات تتحمل أصعب الظروف.
+                    <p className="text-base md:text-lg lg:text-xl text-slate-600 leading-relaxed md:leading-[2] mb-8 md:mb-10 font-medium">
+                        في <strong>أبار جروب</strong>، ندرك أن جودة مستلزمات الآبار هي أساس نجاح أي بئر مياه. لذلك نوفر لعملائنا أفضل <strong>طلمبات الأعماق</strong> والمواسير التي تتحمل الملوحة العالية، مع تقديم استشارات فنية لضمان اختيار القطعة الأنسب.
                     </p>
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="flex items-center gap-3 text-slate-800 font-black">
-                            <ShieldCheck className="text-emerald-500" /> ضمان حقيقي
-                        </div>
-                        <div className="flex items-center gap-3 text-slate-800 font-black">
-                            <Truck className="text-sky-500" /> شحن للموقع
-                        </div>
-                        <div className="flex items-center gap-3 text-slate-800 font-black">
-                            <Settings className="text-amber-500" /> دعم فني مجاني
-                        </div>
-                        <div className="flex items-center gap-3 text-slate-800 font-black">
-                            <Droplets className="text-blue-500" /> مياه مستدامة
-                        </div>
+                    <div className="grid grid-cols-2 gap-4 md:gap-6">
+                        {[
+                          { icon: ShieldCheck, text: "ضمان حقيقي", color: "text-emerald-500" },
+                          { icon: Truck, text: "شحن للموقع", color: "text-sky-500" },
+                          { icon: Settings, text: "دعم فني", color: "text-amber-500" },
+                          { icon: Droplets, text: "حلول مستدامة", color: "text-blue-500" }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm md:text-base text-slate-800 font-black">
+                              <item.icon className={item.color} size={20} /> {item.text}
+                          </div>
+                        ))}
                     </div>
                 </div>
-                <div className="relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl border-8 border-slate-50 group">
+                <div className="relative aspect-video rounded-2xl md:rounded-[3rem] overflow-hidden shadow-2xl border-4 md:border-8 border-slate-50 group">
                     <Image 
                       src="/image/hint.jpeg" 
-                      alt="توريد طلمبات ومستلزمات آبار مياه في مصر" 
+                      alt="توريد طلمبات ومستلزمات آبار مياه" 
                       fill 
                       className="object-cover group-hover:scale-105 transition-transform duration-700" 
                     />
-                    <div className="absolute inset-0 bg-sky-900/10 group-hover:bg-transparent transition-colors"></div>
                 </div>
             </div>
         </section>
 
         {/* حالة التحديث */}
         {categories_du.length === 0 && (
-            <div className="text-center py-40 bg-white rounded-[4rem] border-4 border-dashed border-slate-100">
-                <p className="text-slate-400 font-black text-2xl animate-pulse">جاري تحديث مخزون المتجر حالياً...</p>
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100 mt-10">
+                <p className="text-slate-400 font-black text-lg animate-pulse">جاري تحديث المخزون...</p>
             </div>
         )}
       </div>
 
-      {/* --- 4. فوائد الشراء من متجرنا (SEO Boost) --- */}
-      <section className="py-24 bg-slate-100 border-t border-slate-200">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-              <h2 className="text-3xl font-black mb-12">ماذا يميز توريدات أبار جروب؟</h2>
-              <div className="grid md:grid-cols-3 gap-12">
-                  <div className="p-8 bg-white rounded-[2.5rem] shadow-md border border-slate-50 hover:shadow-xl transition-all">
-                      <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Wrench size={32} />
-                      </div>
-                      <h4 className="text-xl font-black mb-4">توافق مع الصيانة</h4>
-                      <p className="text-slate-500 font-bold leading-loose">كافة المنتجات مختارة لتسهيل عملية <strong>صيانة الآبار</strong> وتقليل فترات التوقف.</p>
-                  </div>
-                  <div className="p-8 bg-white rounded-[2.5rem] shadow-md border border-slate-50 hover:shadow-xl transition-all">
-                      <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Zap size={32} />
-                      </div>
-                      <h4 className="text-xl font-black mb-4">طاقة شمسية أصلية</h4>
-                      <p className="text-slate-500 font-bold leading-loose">نوفر ألواحاً وإنفرترات مخصصة لآبار المياه تضمن لك توفير 100% من الوقود.</p>
-                  </div>
-                  <div className="p-8 bg-white rounded-[2.5rem] shadow-md border border-slate-50 hover:shadow-xl transition-all">
-                      <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Settings size={32} />
-                      </div>
-                      <h4 className="text-xl font-black mb-4">قطع غيار معتمدة</h4>
-                      <p className="text-slate-500 font-bold leading-loose">نلتزم بـ <strong>توريد طلمبات</strong> أصلية بمواصفات تتحمل العمل الشاق في مختلف محافظات مصر.</p>
-                  </div>
+      {/* --- 4. المميزات --- */}
+      <section className="py-16 md:py-24 bg-slate-100 border-t border-slate-200">
+          <div className="max-w-7xl mx-auto px-6">
+              <h2 className="text-2xl md:text-3xl font-black mb-10 md:mb-16 text-center text-slate-900">لماذا تختار ابار جروب</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+                  {[
+                    { icon: Wrench, title: "سهولة الصيانة", desc: "منتجات مختارة بعناية لتقليل تكاليف وفترات صيانة الآبار.", color: "bg-blue-50 text-blue-600" },
+                    { icon: Zap, title: "كفاءة الطاقة", desc: "أنظمة طاقة شمسية أصلية تضمن تشغيل الطلمبات بأقل تكلفة.", color: "bg-emerald-50 text-emerald-600" },
+                    { icon: Settings, title: "دقة المواصفات", desc: "توريد طلمبات ومواسير بمواصفات هندسية دقيقة للمشاريع الكبرى.", color: "bg-amber-50 text-amber-600" }
+                  ].map((feature, i) => (
+                    <div key={i} className="p-6 md:p-8 bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all border border-slate-50 text-center lg:text-right">
+                        <div className={`w-12 h-12 md:w-16 md:h-16 ${feature.color} rounded-xl md:rounded-2xl flex items-center justify-center mx-auto lg:mr-0 mb-6`}>
+                          <feature.icon className="w-6 h-6 md:w-8 md:h-8" />
+                        </div>
+                        <h4 className="text-lg md:text-xl font-black mb-3 text-slate-900">{feature.title}</h4>
+                        <p className="text-slate-500 text-sm md:text-base font-bold leading-relaxed">{feature.desc}</p>
+                    </div>
+                  ))}
               </div>
           </div>
       </section>
 
-      <div className="h-20 bg-white"></div>
+      <div className="h-10 bg-white"></div>
     </main>
   );
 }

@@ -1,4 +1,3 @@
-// app/store/[categoryId]/SubcategoriesClient.tsx
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -12,7 +11,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 /**
- * الواجهات البرمجية (Interfaces) لضمان توافق الأنواع
+ * الواجهات البرمجية (Interfaces)
  */
 interface Subcategory {
   id: string;
@@ -36,7 +35,7 @@ export default function SubcategoriesClient({ initialCategory, initialSubs, cate
   const [searchTerm, setSearchTerm] = useState("");
 
   /**
-   * تحديث البيانات في الخلفية لضمان مزامنة المخزون
+   * تحديث البيانات في الخلفية
    */
   useEffect(() => {
     const refreshSubs = async () => {
@@ -51,41 +50,23 @@ export default function SubcategoriesClient({ initialCategory, initialSubs, cate
   }, [categoryId, initialSubs.length]);
 
   /**
-   * تصفية الأقسام الفرعية مع تحسين أداء البحث
+   * تصفية الأقسام مع تحسين الأداء
    */
   const filteredSubs = useMemo(() => 
     subs.filter(sub => sub.name.toLowerCase().includes(searchTerm.toLowerCase())),
     [subs, searchTerm]
   );
 
-  /**
-   * بناء البيانات المهيكلة (Schema.org) لقائمة الأقسام الفرعية
-   */
-  const listSchema = useMemo(() => ({
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": `أقسام ${initialCategory?.name} - أبار جروب`,
-    "description": `تصفح مجموعة مستلزمات ${initialCategory?.name} المتخصصة في حفر وصيانة الآبار في مصر.`,
-    "itemListElement": filteredSubs.map((sub, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": sub.name,
-      "url": `https://abaargroup.org/store/${categoryId}/${sub.id}`
-    }))
-  }), [filteredSubs, initialCategory, categoryId]);
-
   return (
-    <div className="bg-[#fcfcfd] min-h-screen font-arabic text-right pb-20" dir="rtl">
-      {/* حقن الـ Schema في الـ HTML */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listSchema) }} />
+    <div className="bg-[#fcfcfd] min-h-screen font-arabic text-right pb-20 overflow-x-hidden" dir="rtl">
       
-      {/* 1. Header & Breadcrumbs - تحسين السيو والوصولية */}
-      <section className="bg-white border-b border-slate-100 pt-8 pb-16 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-80 h-80 bg-sky-50/40 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
+      {/* 1. Header & Breadcrumbs */}
+      <section className="bg-white border-b border-slate-100 pt-6 md:pt-8 pb-12 md:pb-16 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-sky-50/40 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2"></div>
         
         <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-slate-400 text-sm font-medium overflow-x-auto whitespace-nowrap pb-2 md:pb-0">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-slate-400 text-[11px] md:text-sm font-bold overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide">
               <Link href="/" className="hover:text-sky-600 transition-colors flex items-center gap-1.5 shrink-0">
                 <Home size={14} /> الرئيسية
               </Link>
@@ -94,226 +75,187 @@ export default function SubcategoriesClient({ initialCategory, initialSubs, cate
                 <Store size={14} /> المتجر
               </Link>
               <ChevronLeft size={12} className="text-slate-300" />
-              <span className="text-sky-700 font-bold bg-sky-50 px-3 py-1 rounded-lg truncate max-w-[200px]">
+              <span className="text-sky-700 font-black bg-sky-50 px-2 py-1 rounded-lg truncate max-w-[150px]">
                 {initialCategory?.name}
               </span>
             </nav>
 
             <Link 
               href="/store" 
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 hover:text-sky-600 hover:border-sky-200 transition-all group shrink-0 w-fit"
+              className="inline-flex items-center gap-2 px-4 my-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl font-black text-xs md:text-sm shadow-sm hover:bg-slate-50 transition-all shrink-0 w-fit"
             >
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-              تصفح كافة الأقسام
+              <ArrowRight size={16} /> تصفح كافة الأقسام
             </Link>
           </div>
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-tight">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="max-w-3xl">
+              <h1 className="text-2xl md:text-4xl lg:text-6xl font-black text-slate-900 leading-tight">
                 توريد مستلزمات <span className="text-sky-600">{initialCategory?.name}</span>
               </h1>
-              <p className="text-slate-500 mt-6 text-lg max-w-2xl font-medium leading-relaxed">
-                نوفر لك أفضل  <strong> المنتجات</strong> المندرجة تحت  {initialCategory?.name}، مع ضمان الجودة لكافة المحافظات المصرية.
+              <p className="text-slate-500 mt-4 text-base md:text-lg font-bold leading-relaxed">
+                نوفر لك أفضل المنتجات المندرجة تحت {initialCategory?.name}، بضمان أبار جروب.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-4 text-slate-500 bg-white px-6 py-4 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50"
-            >
-              <div className="bg-sky-500 p-2.5 rounded-xl text-white shadow-lg shadow-sky-200">
-                <LayoutGrid size={22} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-sky-600 font-black uppercase tracking-widest">مخزون متاح</span>
-                <span className="font-black text-slate-800 text-sm">{filteredSubs.length} أقسام فرعية</span>
-              </div>
-            </motion.div>
+           
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 -mt-10 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 -mt-8 relative z-20">
         
-        {/* 2. Search Bar - تحسين تجربة البحث */}
-        <div className="max-w-2xl mx-auto mb-20">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-sky-500/10 blur-3xl group-focus-within:bg-sky-500/20 transition-all rounded-[2.5rem]"></div>
-            <div className="relative bg-white rounded-[2.5rem] shadow-2xl border border-slate-200/60 flex items-center p-2.5 transition-all group-focus-within:border-sky-400 group-focus-within:ring-4 group-focus-within:ring-sky-50">
-              <div className="p-4 text-sky-500">
-                <Search size={26} />
+        {/* 2. Search Bar */}
+        <div className="max-w-xl mx-auto mb-12 md:mb-20">
+          <div className="relative">
+            <div className="absolute inset-0 bg-sky-500/5 blur-2xl rounded-full"></div>
+            <div className="relative bg-white rounded-2xl md:rounded-[2.5rem] shadow-xl border border-slate-200/60 flex items-center p-1.5 focus-within:ring-4 focus-within:ring-sky-50 transition-all">
+              <div className="p-3 md:p-4 text-sky-500">
+                <Search size={24} />
               </div>
               <input 
                 type="text"
-                placeholder={`ابحث في  ${initialCategory?.name} هنا...`}
+                placeholder={`ابحث في ${initialCategory?.name}...`}
                 value={searchTerm}
-                className="w-full py-4 bg-transparent outline-none text-slate-800 placeholder:text-slate-400 font-bold text-lg"
+                className="w-full py-2 bg-transparent outline-none text-slate-800 placeholder:text-slate-400 font-bold text-sm md:text-lg"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <AnimatePresence>
-                {searchTerm && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={() => setSearchTerm("")}
-                    className="p-3 ml-2 text-slate-400 hover:text-red-500 bg-slate-50 rounded-full transition-colors"
-                  >
-                    <X size={22} />
-                  </motion.button>
-                )}
-              </AnimatePresence>
+              {searchTerm && (
+                <button onClick={() => setSearchTerm("")} className="p-2 ml-2 text-slate-400 hover:text-red-500 transition-colors">
+                  <X size={20} />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* 3. Subcategories Grid - تحسين السيو التقني للبطاقات */}
-        <AnimatePresence mode="popLayout">
+        {/* 3. Subcategories Grid - تحسين حجم الصور وسرعة الاستجابة */}
+        <AnimatePresence mode="wait">
           {filteredSubs.length > 0 ? (
-            <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-12">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10"
+            >
               {filteredSubs.map((sub, index) => (
                 <motion.div
                     key={sub.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    itemScope itemType="https://schema.org/ProductGroup"
+                    transition={{ duration: 0.3, delay: index * 0.03 }} // تسريع زمن الظهور
                 >
                     <Link 
                         href={`/store/${categoryId}/${sub.id}`} 
-                        className="group block"
-                        aria-label={`تصفح منتجات قسم ${sub.name}`}
+                        className="group block touch-manipulation" // تحسين الاستجابة للمس
                     >
-                        <div className="relative aspect-square mb-8 overflow-hidden rounded-[3rem] border-4 border-white shadow-xl group-hover:shadow-sky-500/20 group-hover:border-sky-50 transition-all duration-700 bg-white">
+                        {/* حاوية الصورة المعدلة لتظهر بشكل أكبر */}
+                        <div className="relative aspect-square mb-4 md:mb-6 overflow-hidden rounded-2xl md:rounded-[2.5rem] border-2 md:border-4 border-white shadow-md group-hover:shadow-sky-200 group-hover:border-sky-100 transition-all duration-300 bg-white">
                             <Image 
                                 src={sub.image || '/placeholder.jpg'} 
-                                alt={`توريد مستلزمات ${sub.name} من شركة أبار جروب لحفر الآبار`} 
+                                alt={sub.name} 
                                 fill 
-                                priority={index < 8}
-                                quality={100}
-                                sizes="(max-width: 768px) 50vw, 25vw"
-                                className="object-contain p-6 group-hover:scale-110 transition-transform duration-1000" 
-                                itemProp="image"
+                                priority={index < 6}
+                                sizes="(max-width: 768px) 50vw, 33vw"
+                                className="object-contain p-2 md:p-3 group-hover:scale-105 transition-transform duration-500" // تقليل padding وزيادة الحجم
                             />
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-sky-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center p-8">
-                                <span className="bg-white text-sky-900 px-6 py-3 rounded-2xl text-xs font-black shadow-2xl flex items-center gap-3 translate-y-8 group-hover:translate-y-0 transition-all duration-500 uppercase tracking-tighter">
-                                    استعراض الموديلات <ArrowLeft size={16} />
-                                </span>
+                            <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                                <div className="bg-white/95 text-sky-900 px-4 py-2 rounded-xl text-[10px] font-black shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform hidden md:flex items-center gap-2">
+                                  عرض التفاصيل <ArrowLeft size={14} />
+                                </div>
                             </div>
                         </div>
                         
-                        <div className="text-center px-4">
-                            <h4 itemProp="name" className="font-black text-slate-800 text-lg md:text-xl group-hover:text-sky-600 transition-colors leading-snug line-clamp-2 min-h-[3.5rem] flex items-center justify-center">
+                        <div className="text-center px-1">
+                            <h4 className="font-black text-slate-800 text-sm md:text-lg group-hover:text-sky-600 transition-colors leading-tight line-clamp-2 min-h-[2.5rem] flex items-center justify-center">
                                 {sub.name}
                             </h4>
-                            <p className="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                جودة أبار جروب المعتمدة
-                            </p>
+                            
                         </div>
                     </Link>
                 </motion.div>
               ))}
             </motion.div>
           ) : (
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-32 bg-white rounded-[4rem] border-4 border-dashed border-slate-100 shadow-inner relative overflow-hidden"
-            >
-                <div className="bg-slate-50 w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm relative z-10">
-                    <PackageOpen size={55} className="text-slate-300" />
-                </div>
-                <h3 className="text-slate-800 text-3xl font-black mb-4 relative z-10">لا توجد نتائج داخل هذا القسم</h3>
-                <p className="text-slate-500 max-w-sm mx-auto font-bold text-lg leading-relaxed relative z-10">
-                  لم نجد أي مطابقة  <span className="text-sky-600">{searchTerm}</span>
-                </p>
-                <button 
-                  onClick={() => setSearchTerm("")}
-                  className="mt-10 px-12 py-4 bg-sky-600 text-white rounded-2xl font-black shadow-2xl shadow-sky-100 hover:bg-sky-700 transition-all active:scale-95 relative z-10"
-                >
-                  إعادة تعيين البحث
-                </button>
-            </motion.div>
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                <PackageOpen size={40} className="text-slate-200 mx-auto mb-4" />
+                <h3 className="text-slate-800 text-xl font-black">لا توجد نتائج</h3>
+                <button onClick={() => setSearchTerm("")} className="mt-4 text-sky-600 font-black text-sm underline">مسح البحث</button>
+            </div>
           )}
         </AnimatePresence>
 
-        {/* 4. قسم المحتوى الغني (SEO Content Expansion) - يحل مشكلة Thin Content */}
-        <section className="mt-32 border-t border-slate-100 pt-24">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-                <div className="space-y-10">
-                    <div className="inline-flex items-center gap-3 bg-emerald-50 text-emerald-600 px-5 py-2 rounded-full font-black text-xs">
-                        <ShieldCheck size={16} /> خيار المهندسين الأول في مصر
+        {/* 4. SEO Content Section */}
+        <section className="mt-24 md:mt-32 border-t border-slate-100 pt-16 md:pt-24">
+            <div className="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
+                <div className="space-y-6 md:space-y-8">
+                    <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full font-black text-[10px] md:text-xs">
+                        <ShieldCheck size={14} /> الخيار الأول للمشاريع القومية والمزارع
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight">
-                        لماذا تختار  {initialCategory?.name} من أبار جروب؟
+                    <h2 className="text-2xl md:text-4xl font-black text-slate-900 leading-tight">
+                        لماذا تعتمد على أبار جروب في توريد {initialCategory?.name}؟
                     </h2>
-                    <p className="text-xl text-slate-600 leading-[2.2] font-medium">
-                        في أبار جروب، نحن لا نكتفي بعملية <strong>توريد مستلزمات الآبار</strong>، بل نحرص على اختيار القطع التي تتحمل ظروف التشغيل الشاقة في المواقع المصرية. خبرتنا في <strong>صيانة الآبار</strong> الجوفية جعلتنا ندرك أدق التفاصيل التي تضمن طول عمر المعدة وكفاءتها في استخراج المياه.
+                    <p className="text-base md:text-lg text-slate-600 leading-relaxed font-bold">
+                        تتميز أبار جروب بتقديم حلول متكاملة لـ <strong>توريد مستلزمات الآبار</strong>، حيث تخضع جميع المنتجات لاختبارات دقيقة لضمان تحملها ملوحة المياه العالية وظروف الآبار العميقة في مصر.
                     </p>
-                    <div className="grid sm:grid-cols-2 gap-6">
-                        <div className="flex gap-4 p-6 bg-white rounded-3xl border border-slate-50 shadow-sm">
-                            <Truck className="text-sky-500 shrink-0" size={32} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex gap-3 p-4 bg-white rounded-2xl border border-slate-50 shadow-sm">
+                            <Truck className="text-sky-500 shrink-0" size={24} />
                             <div>
-                                <h5 className="font-black text-slate-900 mb-1">شحن سريع</h5>
-                                <p className="text-sm text-slate-500 font-bold">توصيل لكافة المحافظات والمزارع.</p>
+                                <h5 className="font-black text-slate-900 text-sm">توريد فوري</h5>
+                                <p className="text-[11px] text-slate-500 font-bold">شحن لجميع المحافظات خلال 48 ساعة.</p>
                             </div>
                         </div>
-                        <div className="flex gap-4 p-6 bg-white rounded-3xl border border-slate-50 shadow-sm">
-                            <Wrench className="text-emerald-500 shrink-0" size={32} />
+                        <div className="flex gap-3 p-4 bg-white rounded-2xl border border-slate-50 shadow-sm">
+                            <Wrench className="text-emerald-500 shrink-0" size={24} />
                             <div>
-                                <h5 className="font-black text-slate-900 mb-1">دعم فني</h5>
-                                <p className="text-sm text-slate-500 font-bold">استشارات مجانية للتركيب والصيانة.</p>
+                                <h5 className="font-black text-slate-900 text-sm">إشراف فني</h5>
+                                <p className="text-[11px] text-slate-500 font-bold">دعم فني متخصص عند التركيب.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="relative">
-                    <div className="absolute inset-0 bg-sky-200 rounded-[4rem] rotate-3 opacity-20"></div>
-                    <div className="relative aspect-video rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white group">
+                    <div className="absolute inset-0 bg-sky-100 rounded-[2.5rem] md:rounded-[4rem] rotate-2 opacity-30"></div>
+                    <div className="relative aspect-video rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-4 md:border-8 border-white group">
                          <Image 
                             src="/image/about.jpeg" 
                             alt={`عمليات فحص وصيانة ${initialCategory?.name}`} 
                             fill 
-                            className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                            className="object-cover group-hover:scale-105 transition-transform duration-700" 
                          />
-                         <div className="absolute inset-0 bg-sky-950/20 group-hover:bg-transparent transition-all"></div>
+                         <div className="absolute inset-0 bg-sky-900/10"></div>
                     </div>
                 </div>
             </div>
         </section>
       </div>
 
-      {/* 5. تذييل تفاعلي سريع */}
-      <div className="max-w-7xl mx-auto px-6 mt-32">
-        <div className="bg-slate-900 rounded-[3.5rem] p-10 md:p-20 text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/10 rounded-full blur-[120px] -mr-20 -mt-20"></div>
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="text-center lg:text-right">
-              <h5 className="text-3xl md:text-4xl font-black mb-6">لم تجد القطعة المناسبة؟</h5>
-              <p className="text-slate-400 text-lg max-w-xl font-medium leading-loose">
-                مخزوننا يتحدث يومياً. تواصل معنا مباشرة لتوفير مستلزمات <strong>حفر الآبار</strong> أو أنظمة <strong>الطاقة الشمسية</strong> الخاصة بك فوراً.
+      {/* 5. CTA Footer */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mt-20 md:mt-32">
+        <div className="bg-slate-900 rounded-[2rem] md:rounded-[3.5rem] p-8 md:p-16 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-[100px] -mr-20 -mt-20"></div>
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12 text-center lg:text-right">
+            <div>
+              <h5 className="text-2xl md:text-4xl font-black mb-4">هل تحتاج الي اي استشارة </h5>
+              <p className="text-slate-400 text-sm md:text-lg font-bold max-w-xl">
+                تواصل معنا لتحديد أفضل نوع من <strong>مستلزمات الآبار</strong> يناسب طبيعة مشروعك.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-6 shrink-0 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                <a 
                 href="https://wa.me/201211110240" 
-                className="px-12 py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[1.5rem] font-black transition-all shadow-xl active:scale-95 text-center flex items-center justify-center gap-3"
+                className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
               >
-                تواصل عبر واتساب <ArrowLeft size={20} />
+                واتساب  <ArrowLeft size={18} />
               </a>
-               <Link href="/contact" className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white rounded-[1.5rem] font-black border border-white/10 transition-all text-center">
-                اتصل بنا هاتفياً
+               <Link href="/contact" className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black border border-white/10 transition-all">
+                طلب عرض سعر
               </Link>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="h-20"></div>
     </div>
   );
 }
