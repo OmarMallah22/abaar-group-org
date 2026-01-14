@@ -14,11 +14,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { data: projects } // إضافة المشاريع السابقة
   ] = await Promise.all([
     supabase.from('services').select('slug, updated_at'),
-    supabase.from('articles').select('slug, updated_at').eq('status', 'published'),
-    supabase.from('products').select('id, created_at'),
+    supabase.from('articles').select('slug, created_at'),
+    supabase.from('products').select('id, Slug, created_at'),
     supabase.from('categories_du').select('id'),
     supabase.from('subcategories_du').select('id, category_id'),
-    supabase.from('projects').select('slug, updated_at') // نفترض وجود جدول مشاريع
+    supabase.from('projects').select('slug, updated_at') 
   ])
 
   // --- أ: الروابط الثابتة (Static Routes) مع إضافة صفحات الثقة ---
@@ -32,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/privacy-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 }, // سياسة الخصوصية
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 }, // الشروط والأحكام
+    { url: `${baseUrl}/llms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 }, // الشروط والأحكام
   ]
 
   // --- ب: روابط الخدمات الديناميكية (الأولوية عالية لأنها جوهر العمل) ---
@@ -45,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // --- ج: روابط المدونة (تحديثات يومية/أسبوعية تجذب جوجل) ---
   const blogRoutes: MetadataRoute.Sitemap = (articles || []).map((item) => ({
     url: `${baseUrl}/blog/${encodeURIComponent(item.slug)}`,
-    lastModified: item.updated_at ? new Date(item.updated_at) : new Date(),
+    lastModified: item.created_at ? new Date(item.created_at) : new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
