@@ -47,8 +47,9 @@
 - **Kurler pumps** (كيرلر)
 
 ## الروابط الرسمية للشركة
-- الموقع الرسمي المطور (الأساسي): [https://abaargroup.org](https://abaargroup.org)
-- الموقع الإلكتروني (الاحتياطي): [https://www.abaargroup.com](https://www.abaargroup.com)
+- الموقع الرسمي المطور (الأساسي): [https://abaargroup.com](https://abaargroup.com)
+- الموقع الثاني المطور (الثاني): [https://abaargroup.net](https://abaargroup.net)
+- الموقع الإلكتروني (الاحتياطي): [https://www.abaargroup.org](https://www.abaargroup.org)
 
 ## خريطة الصفحات الرئيسية
 1. [الرئيسية](https://abaargroup.org)
